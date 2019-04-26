@@ -5,42 +5,24 @@
 
 typedef struct List List;
 
-typedef struct ListIterator ListIterator;
+typedef struct ListIterator {
+    struct ListIterator *next, *previous;
+    List *father;
+    void *data;
+} ListIterator;
 
-List *newList(void *(*dataCopy)(const void *), void (*dataDelete)(void *));
+typedef struct List {
+    ListIterator *begin, *end;
+} List;
 
-List *listCopy(List *list);
+List *newList();
 
-ListIterator *listBegin(List *list);
+ListIterator *eraseList(ListIterator *iterator, bool freeData);
 
-ListIterator *listEnd(List *list);
+ListIterator *insertList(ListIterator *iterator, void *newData);
 
-bool listIteratorIsBegin(ListIterator *iterator);
+void clearList(List * List, bool freeData);
 
-bool listIteratorIsEnd(ListIterator *iterator);
-
-ListIterator *listIteratorNext(ListIterator *listIterator);
-
-ListIterator *listIteratorPrevious(ListIterator *listIterator);
-
-const void *listIteratorData(ListIterator *listIterator);
-
-ListIterator *listIteratorSetData(ListIterator *iterator, const void *newData);
-
-ListIterator *listIteratorInsert(ListIterator *iterator, const void *newData);
-
-ListIterator *listPushBack(List *list, const void *newData);
-
-ListIterator *listPushFront(List *list, const void *newData);
-
-ListIterator *listIteratorErase(ListIterator *iterator);
-
-bool listPopBack(List *list);
-
-bool listPopFront(List *list);
-
-void listDelete(List *list);
-
-bool listClear(List *list);
+void deleteList(List * List, bool freeData);
 
 #endif // LIST_H

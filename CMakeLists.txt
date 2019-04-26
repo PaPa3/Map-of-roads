@@ -24,10 +24,12 @@ set(SOURCE_FILES
     src/map.c
     src/map.h
     src/map_main.c
-    src/treap.c
-    src/treap.h
     src/list.c
-    src/list.h)
+    src/list.h
+    src/city.c
+    src/city.h
+    src/heap.c
+    src/heap.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})
