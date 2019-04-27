@@ -21,8 +21,13 @@ ListIterator *eraseList(ListIterator *iterator, bool freeData);
 
 ListIterator *insertList(ListIterator *iterator, void *newData);
 
-void clearList(List * List, bool freeData);
+// wyjmuje elementy z sourceList i insertuje je przed iterator
+void spliceList(ListIterator *iterator, List *sourceList);
 
-void deleteList(List * List, bool freeData);
+void clearList(List *List, bool freeData);
+
+void deleteList(List *List, bool freeData);
+
+void reverseList(List *list);
 
 #endif // LIST_H

@@ -4,17 +4,22 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef struct HeapKey HeapKey;
+
 typedef struct Heap {
     void **data;
-    int64_t *keys;
+    HeapKey **keys;
     uint32_t size;
     uint32_t reservedMemory;
 } Heap;
 
 Heap *newHeap();
 
-bool pushHeap(Heap *heap, int64_t key, void *data);
+void deleteHeap(Heap *heap, bool freeData);
 
+bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, void *data);
+
+// zwraca top
 void *popHeap(Heap *heap, bool freeData);
 
 #endif // HEAP_H

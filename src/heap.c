@@ -5,6 +5,46 @@
 
 #define DEFAULT_HEAP_ARRAY_MEMORY_SIZE 8
 
+typedef struct HeapKey {
+    int64_t distance;
+    int64_t oldestRoad;
+} HeapKey;
+
+HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
+    HeapKey *result = malloc(sizeof(HeapKey));
+    if (result == NULL) {
+        return NULL;
+    }
+
+    result->distance = distance;
+    result->oldestRoad = oldestRoad;
+
+    return result;
+}
+
+void deleteHeap(Heap *heap, bool freeData) {
+    assert(heap);
+
+    for (uint32_t i = 1; i <= heap->size; i++) {
+        free(heap->keys[i]);
+        if (freeData && heap->data[i] != NULL) {
+            free(heap->data[i]);
+        }
+    }
+
+    free(heap->data);
+    free(heap->keys);
+    free(heap);
+}
+
+bool isHeapKeySmallerThan(HeapKey *key, HeapKey *other) {
+    if (key->distance == other->distance) {
+        return key->oldestRoad < other->oldestRoad;
+    }
+
+    return key->distance < other->distance;
+}
+
 bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
     assert(heap);
 
@@ -18,7 +58,7 @@ bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
     }
     heap->data = ptr;
 
-    int64_t *ptr2 = realloc(heap->keys, sizeof(int64_t) * newMemory);
+    HeapKey **ptr2 = realloc(heap->keys, sizeof(HeapKey *) * newMemory);
     if (ptr2 == NULL) {
         return NULL;
     }
@@ -51,17 +91,22 @@ void swapHeapData(Heap *heap, uint32_t position1, uint32_t position2) {
     assert(0 < position1 <= heap->size);
     assert(0 < position2 <= heap->size);
 
-    int64_t integer = heap->keys[position1];
+    HeapKey *key = heap->keys[position1];
     heap->keys[position1] = heap->keys[position2];
-    heap->keys[position2] = integer;
+    heap->keys[position2] = key;
 
     void *pointer = heap->data[position1];
     heap->data[position1] = heap->data[position2];
     heap->data[position2] = pointer;
 }
 
-bool pushHeap(Heap *heap, int64_t key, void *data) {
+bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, void *data) {
     assert(heap);
+
+    HeapKey *key = newHeapKey(distance, oldestRoad);
+    if (key == NULL) {
+        return false;
+    }
 
     uint32_t position = heap->size + 1;
 
@@ -75,7 +120,9 @@ bool pushHeap(Heap *heap, int64_t key, void *data) {
     heap->data[position] = data;
     heap->keys[position] = key;
 
-    while (position > 1 && heap->keys[position] < heap->keys[position / 2]) {
+    while (position > 1 &&
+           isHeapKeySmallerThan(heap->keys[position], heap->keys[position / 2])) {
+           //heap->keys[position] < heap->keys[position / 2]) {
         swapHeapData(heap, position, position / 2);
 
         position /= 2;
@@ -108,12 +155,16 @@ void *popHeap(Heap *heap, bool freeData) {
         }
 
         if (position * 2 + 1 <= heap->size &&
-                heap->keys[position * 2 + 1] < heap->keys[childWithSmallestKey]) {
+                isHeapKeySmallerThan(heap->keys[position * 2 + 1],
+                                     heap->keys[childWithSmallestKey]) ) {
+                //heap->keys[position * 2 + 1] < heap->keys[childWithSmallestKey]) {
             childWithSmallestKey = position * 2 + 1;
         }
 
         if (childWithSmallestKey != 0 &&
-                heap->keys[position] > heap->keys[childWithSmallestKey]) {
+                isHeapKeySmallerThan(heap->keys[childWithSmallestKey],
+                                     heap->keys[position])) {
+                //heap->keys[position] > heap->keys[childWithSmallestKey]) {
             swapHeapData(heap, position, childWithSmallestKey);
             position = childWithSmallestKey;
         } else {

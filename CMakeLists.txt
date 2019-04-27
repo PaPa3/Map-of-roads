@@ -29,7 +29,13 @@ set(SOURCE_FILES
     src/city.c
     src/city.h
     src/heap.c
-    src/heap.h)
+    src/heap.h
+    src/road.c
+    src/road.h
+    src/route.c
+    src/route.h
+    src/string_builder.c
+    src/string_builder.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})

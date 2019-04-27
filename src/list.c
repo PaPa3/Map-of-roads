@@ -62,6 +62,21 @@ ListIterator *eraseList(ListIterator *iterator, bool freeData) {
     return result;
 }
 
+void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
+    assert(iterator);
+    assert(newIterator);
+
+    if (iterator->previous != iterator) { // jesli iterator != poczatek listy
+        newIterator->previous = iterator->previous;
+        iterator->previous->next = newIterator;
+    } else {
+        newIterator->previous = newIterator;
+        iterator->father->begin = newIterator;
+    }
+    newIterator->next = iterator;
+    iterator->previous = newIterator;
+}
+
 ListIterator *insertList(ListIterator *iterator, void *newData) {
     assert(iterator);
 
@@ -71,20 +86,26 @@ ListIterator *insertList(ListIterator *iterator, void *newData) {
     }
 
     result->data = newData;
-
-    if (iterator->previous != iterator) { // jesli iterator != poczatek listy
-        result->previous = iterator->previous;
-        iterator->previous->next = result;
-    } else {
-        iterator->father->begin = result;
-    }
-    result->next = iterator;
-    iterator->previous = result;
+    insertListIterator(iterator, result);
 
     return result;
 }
 
-void clearList(List * List, bool freeData) {
+void spliceList(ListIterator *iterator, List *sourceList) {
+    assert(iterator);
+    assert(sourceList);
+
+    ListIterator *ptr = sourceList->begin;
+    while (ptr != sourceList->end) {
+        ptr = ptr->next;
+        insertListIterator(iterator, ptr->previous);
+    }
+
+    sourceList->begin = sourceList->end;
+    sourceList->end->previous = sourceList->end;
+}
+
+void clearList(List *List, bool freeData) {
     assert(List);
 
     while (List->begin != List->end) {
@@ -92,10 +113,39 @@ void clearList(List * List, bool freeData) {
     }
 }
 
-void deleteList(List * List, bool freeData) {
+void deleteList(List *List, bool freeData) {
     assert(List);
 
     clearList(List, freeData);
     free(List->end);
     free(List);
+}
+
+void swapListIteratorPointers(ListIterator **iterator1, ListIterator **iterator2) {
+    assert(iterator1);
+    assert(iterator2);
+
+    ListIterator *ptr = *iterator1;
+    *iterator1 = *iterator2;
+    *iterator2 = ptr;
+}
+
+void reverseList(List *list) {
+    assert(list);
+
+    if (list->begin == list->end) {
+        return;
+    }
+
+    ListIterator *iterator = list->begin;
+    while (iterator->next != iterator) {
+        swapListIteratorPointers(&iterator->previous, &iterator->next);
+        iterator = iterator->previous;
+    }
+
+    iterator = list->begin;
+    list->begin->next = list->end;
+    list->begin = list->end->previous;
+    list->begin->previous = list->begin;
+    list->end->previous = iterator;
 }
