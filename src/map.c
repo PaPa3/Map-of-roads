@@ -118,6 +118,10 @@ bool newRoute(Map *map, unsigned routeId,
         return false;
     }
 
+    if (routeId < 1 || 999 < routeId) {
+        return false;
+    }
+
     City *city1 = findCityOnList(map->cities, cityName1);
     City *city2 = findCityOnList(map->cities, cityName2);
     if (city1 == NULL || city2 == NULL) {

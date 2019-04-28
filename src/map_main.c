@@ -52,7 +52,7 @@ int toSigned(const char* str) {
 	return sign * result;
 }
 
-const int LL = 135;
+const int LL = 2815;
 
 int main() {
 	m = newMap();
@@ -80,12 +80,13 @@ int main() {
 		if (argc == 0) continue;
 		bool result = false;
 		bool wypisac = true;
-        if (lineNr == 412) {
-            debug(m);
+        if (lineNr == 117) {
+            //debug(m);
+            //break;
         }
-        if (lineNr == 413) {
-            printf("%s", getRouteDescription(m, 54));
-            break;
+        if (lineNr == 118) {
+            //printf("%s", getRouteDescription(m, 1002));
+            //break;
         }
 		if (strcmp(argv[0], "addRoad") == 0) {
 			if (argc != 5) ERROR(NUM);

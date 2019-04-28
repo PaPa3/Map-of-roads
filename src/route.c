@@ -32,7 +32,8 @@ int64_t minInt64_t(int64_t x, int64_t y) {
     }
 }
 
-List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCities) {
+bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
+                   List *listOfCities, int64_t knownOldestRoad) {
     assert(route);
     assert(from);
     assert(to);
@@ -40,12 +41,13 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
 
     Heap *heap = newHeap();
     if (heap == NULL) {
-        return NULL;
+        return false;
     }
 
     ListIterator *iterator = listOfCities->begin;
     while (iterator != listOfCities->end) {
         ((City *)iterator->data)->distance = INFINITY;
+        ((City *)iterator->data)->oldestRoadOnRoute = INFINITY;
         iterator = iterator->next;
     }
 
@@ -66,7 +68,7 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     }
     if (!pushHeap(heap, 0, INFINITY, from)) {
         deleteHeap(heap, false);
-        return NULL;
+        return false;
     }
 
     City *ptr;
@@ -75,7 +77,12 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
 
         ptr = heap->data[1];
 
-        if (heap->keys[1]->distance != ptr->distance ||
+        if (heap->keys[1]->distance != ptr->distance) {
+            popHeap(heap, false);
+            continue;
+        }
+
+        if (knownOldestRoad == 0 &&
                 heap->keys[1]->oldestRoad != ptr->oldestRoadOnRoute) {
             popHeap(heap, false);
             continue;
@@ -93,12 +100,22 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
                 continue;
             }
 
+            if (knownOldestRoad != 0 &&
+                    knownOldestRoad > road->buildYearOrLastRepairYear) {
+                iterator = iterator->next;
+                continue;
+            }
+
             int64_t distance = ptr->distance + road->length;
             int64_t oldestRoute = minInt64_t(ptr->oldestRoadOnRoute,
                                              road->buildYearOrLastRepairYear);
             int64_t c = compareRoutes(distance, oldestRoute,
                                   road->destination->distance,
                                   road->destination->oldestRoadOnRoute);
+
+            if (knownOldestRoad != 0) {
+                c = distance - road->destination->distance;
+            }
 
             if (c < 0) {
                 road->destination->distance = distance;
@@ -108,7 +125,7 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
 
                 if (!pushHeap(heap, distance, oldestRoute, road->destination)) {
                     deleteHeap(heap, false);
-                    return NULL;
+                    return false;
                 }
             } else if (c == 0) {
                 road->destination->isRouteUnequivocal = false;
@@ -119,6 +136,35 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     }
 
     deleteHeap(heap, false);
+
+    return true;
+}
+
+List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCities) {
+    assert(route);
+    assert(from);
+    assert(to);
+    assert(listOfCities);
+
+    if (!dijkstraRoute(route, from, to, to2, listOfCities, 0)) {
+        return NULL;
+    }
+
+    int64_t knownOldestRoad = to->oldestRoadOnRoute;
+    if (to2 != NULL) {
+        if (to->distance == to2->distance) {
+            knownOldestRoad = -minInt64_t(-knownOldestRoad, -to2->oldestRoadOnRoute); //max
+        } else if (to->distance > to2->distance) {
+            knownOldestRoad = to2->oldestRoadOnRoute;
+        }
+    }
+    if (knownOldestRoad == INFINITY) {
+        return NULL;
+    }
+    if (!dijkstraRoute(route, from, to, to2, listOfCities, knownOldestRoad)) {
+        return NULL;
+    }
+
     if (to2 != NULL) {
         int64_t c = compareRoutes(to->distance, to->oldestRoadOnRoute,
                               to2->distance, to2->oldestRoadOnRoute);
@@ -133,7 +179,7 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     }
 
     List *result = newList();
-    ptr = to;
+    City *ptr = to;
     while (true) {
         if (insertList(result->begin, ptr) == NULL) {
             deleteList(result, false);
