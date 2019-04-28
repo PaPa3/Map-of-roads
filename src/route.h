@@ -4,9 +4,12 @@
 #include "city.h"
 #include "list.h"
 
+#include <stdbool.h>
+
 typedef struct Route {
     unsigned routeId;
     List *cities;
+    bool wasChanged;
 } Route;
 
 Route *newRouteStruct(unsigned routeId, City *city1, City *city2,

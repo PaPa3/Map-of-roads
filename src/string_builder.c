@@ -16,10 +16,11 @@ bool resizeStringBuilder(StringBuilder *ptr, uint32_t newMemorySize) {
         return true;
     }
 
-    char *string = realloc(ptr->data, newMemorySize);
+    char *string = realloc(ptr->data, newMemorySize * sizeof(char));
     if (string == NULL) {
         return false;
     }
+    ptr->data = string;
 
     ptr->reservedMemory = newMemorySize;
 
@@ -32,10 +33,12 @@ StringBuilder *newStringBuilder() {
         return NULL;
     }
 
+    /*result->data = NULL;
     if (!resizeStringBuilder(result, DEFAULT_STRING_BUILDER_MEMORY_SIZE)) {
         free(result);
         return NULL;
-    }
+    }*/result->data = malloc(sizeof(char) * DEFAULT_STRING_BUILDER_MEMORY_SIZE);
+    result->reservedMemory = DEFAULT_STRING_BUILDER_MEMORY_SIZE;
 
     result->size = 0;
 

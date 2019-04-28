@@ -5,10 +5,22 @@
 
 #define DEFAULT_HEAP_ARRAY_MEMORY_SIZE 8
 
-typedef struct HeapKey {
-    int64_t distance;
-    int64_t oldestRoad;
-} HeapKey;
+
+
+#include <stdio.h>
+#include <inttypes.h>
+void debugHeap(Heap *heap) {
+    assert(heap);
+
+    printf("size = %d, memory = %u\n", heap->size, heap->reservedMemory);
+
+    for (int i = 1; i <= heap->size; i++) {
+        printf("%"PRIu64",%"PRIu64" ", heap->keys[i]->distance, heap->keys[i]->oldestRoad);
+    }
+
+    printf("\n");
+    fflush(stdout);
+}
 
 HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
     HeapKey *result = malloc(sizeof(HeapKey));
@@ -53,6 +65,7 @@ bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
     }
 
     void **ptr = realloc(heap->data, sizeof(void *) * newMemory);
+    //void **ptr = malloc(sizeof(void *) * 8);
     if (ptr == NULL) {
         return false;
     }
@@ -77,6 +90,8 @@ Heap *newHeap() {
 
     result->size = 0;
     result->reservedMemory = 0;
+    result->data = NULL;
+    result->keys = NULL;
 
     if (!reserveMemoryHeap(result, DEFAULT_HEAP_ARRAY_MEMORY_SIZE)) {
         free(result);
@@ -138,6 +153,7 @@ void *popHeap(Heap *heap, bool freeData) {
     void *result = heap->data[1];
 
     swapHeapData(heap, 1, heap->size);
+    free(heap->keys[heap->size]);
     if (freeData && heap->data[heap->size] != NULL) {
         free(heap->data[heap->size]);
     }

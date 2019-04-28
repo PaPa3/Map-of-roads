@@ -61,6 +61,7 @@ bool isStringValidCityName(const char *string) {
         if ((0 <= *string && *string <= 31) || *string == ';') {
             return false;
         }
+        string++;
     }
 
     return true;
@@ -75,7 +76,7 @@ City *findCityOnList(List *listOfCities, const char *name) {
 
     while (iterator != listOfCities->end) {
         city = iterator->data;
-        if (city->hashName == hashName && strcmp(city->name, name)) {
+        if (city->hashName == hashName && strcmp(city->name, name) == 0) {
             break;
         }
 
@@ -92,7 +93,8 @@ City *findCityOnList(List *listOfCities, const char *name) {
 City *findCityInsertIfNecessary(List *listOfCities, const char *name) {
     assert(listOfCities);
 
-    if (findCityOnList(listOfCities, name) == NULL) {
+    City *result = findCityOnList(listOfCities, name);
+    if (result == NULL) {
         City *city = newCity(name);
         if (city == NULL) {
             return NULL;
@@ -103,7 +105,9 @@ City *findCityInsertIfNecessary(List *listOfCities, const char *name) {
             deleteCity(city);
             return NULL;
         }
+
+        return listOfCities->end->previous->data;
     }
 
-    return listOfCities->end->previous->data;
+    return result;
 }

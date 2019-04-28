@@ -4,7 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct HeapKey HeapKey;
+typedef struct HeapKey {
+    int64_t distance;
+    int64_t oldestRoad;
+} HeapKey;
+
 
 typedef struct Heap {
     void **data;

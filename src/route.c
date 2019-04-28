@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define INFINITY 1000000000000000000ll
+#define INFINITY 1000000000000000ll // zmiejszyłem, może lepiej zwiększyć z powrotem
 
 void deleteRouteStruct(Route *route) {
     assert(route);
@@ -15,10 +15,10 @@ void deleteRouteStruct(Route *route) {
     free(route);
 }
 
-int compareRoutes(int64_t distance1, int64_t oldestRoute1,
+int64_t compareRoutes(int64_t distance1, int64_t oldestRoute1,
                   int64_t distance2, int64_t oldestRoute2) {
     if (distance1 == distance2) {
-        return oldestRoute1 - oldestRoute2;
+        return oldestRoute2 - oldestRoute1;
     }
 
     return distance1 - distance2;
@@ -46,12 +46,14 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     ListIterator *iterator = listOfCities->begin;
     while (iterator != listOfCities->end) {
         ((City *)iterator->data)->distance = INFINITY;
+        iterator = iterator->next;
     }
 
     if (route->cities != NULL) {
         iterator = route->cities->begin;
         while (iterator != route->cities->end) {
             ((City *)iterator->data)->distance = -1;
+            iterator = iterator->next;
         }
     }
 
@@ -63,12 +65,23 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
         to2->distance = INFINITY;
     }
     if (!pushHeap(heap, 0, INFINITY, from)) {
+        deleteHeap(heap, false);
         return NULL;
     }
 
     City *ptr;
     while (heap->size != 0) {
-        ptr = popHeap(heap, false);
+        //debugHeap(heap);
+
+        ptr = heap->data[1];
+
+        if (heap->keys[1]->distance != ptr->distance ||
+                heap->keys[1]->oldestRoad != ptr->oldestRoadOnRoute) {
+            popHeap(heap, false);
+            continue;
+        }
+
+        popHeap(heap, false);
 
         iterator = ptr->roads->begin;
         Road *road;
@@ -76,36 +89,38 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
             road = iterator->data;
 
             if (road->isDeleted) {
+                iterator = iterator->next;
                 continue;
             }
 
             int64_t distance = ptr->distance + road->length;
             int64_t oldestRoute = minInt64_t(ptr->oldestRoadOnRoute,
                                              road->buildYearOrLastRepairYear);
-            int c = compareRoutes(distance, oldestRoute,
+            int64_t c = compareRoutes(distance, oldestRoute,
                                   road->destination->distance,
                                   road->destination->oldestRoadOnRoute);
 
-            if (c <= 0) {
+            if (c < 0) {
                 road->destination->distance = distance;
-                road->destination->isRouteUnequivocal = oldestRoute;
+                road->destination->oldestRoadOnRoute = oldestRoute;
                 road->destination->isRouteUnequivocal = ptr->isRouteUnequivocal;
                 road->destination->previousOnRoute = ptr;
-                if (c == 0) {
-                    road->destination->isRouteUnequivocal = false;
-                }
 
                 if (!pushHeap(heap, distance, oldestRoute, road->destination)) {
                     deleteHeap(heap, false);
                     return NULL;
                 }
+            } else if (c == 0) {
+                road->destination->isRouteUnequivocal = false;
             }
+
+            iterator = iterator->next;
         }
     }
 
     deleteHeap(heap, false);
     if (to2 != NULL) {
-        int c = compareRoutes(to->distance, to->oldestRoadOnRoute,
+        int64_t c = compareRoutes(to->distance, to->oldestRoadOnRoute,
                               to2->distance, to2->oldestRoadOnRoute);
         if (c == 0) {
             return NULL;
@@ -125,7 +140,7 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
             return NULL;
         }
 
-        if (ptr->previousOnRoute == from) {
+        if (ptr == from) {
             break;
         }
 
@@ -143,6 +158,7 @@ Route *newRouteStruct(unsigned routeId, City *city1, City *city2,
     }
 
     result->routeId = routeId;
+    result->cities = NULL;
     result->cities = findRoute(result, city1, city2, NULL, listOfCities);
     if (result->cities == NULL) {
         free(result);
@@ -159,13 +175,19 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
     assert(city2);
     assert(listOfCities);
 
+    route->wasChanged = false;
+
     ListIterator *iterator = route->cities->begin;
     while (iterator != route->cities->end &&
            iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
     }
 
-    if (iterator == route->cities->end) {
+    if (iterator == route->cities->end || iterator->next == route->cities->end) {
+        return true;
+    }
+
+    if (iterator->next->data != city1 && iterator->next->data != city2) {
         return true;
     }
 
@@ -185,6 +207,7 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
     spliceList(iterator->next, list);
     deleteList(list, false);
 
+    route->wasChanged = true;
     return true;
 }
 
@@ -193,13 +216,17 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
     assert(city1);
     assert(city2);
 
+    if (!route->wasChanged) {
+        return;
+    }
+
     ListIterator *iterator = route->cities->begin;
     while (iterator != route->cities->end &&
            iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
     }
 
-    if (iterator == route->cities->end) {
+    if (iterator == route->cities->end) {//TODO chyba do usuniecia to
         return;
     }
 
@@ -221,7 +248,7 @@ bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities) {
         return false;
     }
 
-    if (list->end->previous == route->cities->begin) {
+    if (list->end->previous->data == route->cities->begin->data) {
         eraseList(list->end->previous, false);
         spliceList(route->cities->begin, list);
         deleteList(list, false);
@@ -243,6 +270,7 @@ Route *findRouteOnList(List *list, unsigned routeId) {
         if (((Route *)iterator->data)->routeId == routeId) {
             return iterator->data;
         }
+        iterator = iterator->next;
     }
 
     return NULL;
@@ -269,7 +297,7 @@ char *descriptionRoute(Route *route) {
     }
 
     while (iterator != route->cities->end->previous) {
-        Road *road = findRoad(iterator->data, iterator->next->data);
+        Road *road = findRoad(iterator->data, iterator->next->data)->data;
 
         if (!appendStringBuilderInteger(result, road->length)) {
             deleteStringBuilder(result, true);

@@ -75,6 +75,7 @@ void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
     }
     newIterator->next = iterator;
     iterator->previous = newIterator;
+    newIterator->father = iterator->father;
 }
 
 ListIterator *insertList(ListIterator *iterator, void *newData) {

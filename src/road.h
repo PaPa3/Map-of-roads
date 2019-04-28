@@ -22,6 +22,8 @@ bool repairRoadModule(City *city1, City *city2, int repairYear);
 
 bool setRoadIsDeletedTo(City *city1, City *city2, bool newIsDeleted);
 
-Road *findRoad(City *from, City *to);
+ListIterator *findRoad(City *from, City *to);
+
+void removeRoadStruct(City *city1, City *city2);
 
 #endif // ROAD_H

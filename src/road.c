@@ -59,7 +59,7 @@ bool addRoadModule(City *city1, City *city2, unsigned length, int builtYear) {
     return true;
 }
 
-Road *findRoad(City *from, City *to) {
+ListIterator *findRoad(City *from, City *to) {
     assert(from);
     assert(to);
 
@@ -67,7 +67,7 @@ Road *findRoad(City *from, City *to) {
     while (iterator != from->roads->end) {
         Road *road = iterator->data;
         if (road->destination == to) {
-            return road;
+            return iterator;
         }
         iterator = iterator->next;
     }
@@ -79,13 +79,18 @@ bool repairRoadModule(City *city1, City *city2, int repairYear) {
     assert(city1);
     assert(city2);
 
-    Road *road = findRoad(city1, city2);
-    if (road == NULL || road->buildYearOrLastRepairYear > repairYear) {
+    ListIterator *iterator = findRoad(city1, city2);
+    if (iterator == NULL) {
+        return false;
+    }
+
+    Road *road = iterator->data;
+    if(road->buildYearOrLastRepairYear > repairYear) {
         return false;
     }
 
     road->buildYearOrLastRepairYear = repairYear;
-    findRoad(city2, city1)->buildYearOrLastRepairYear = repairYear;
+    ((Road *)findRoad(city2, city1)->data)->buildYearOrLastRepairYear = repairYear;
 
     return true;
 }
@@ -94,13 +99,23 @@ bool setRoadIsDeletedTo(City *city1, City *city2, bool newIsDeleted) {
     assert(city1);
     assert(city2);
 
-    Road *road = findRoad(city1, city2);
-    if (road == NULL) {
+    ListIterator *iterator = findRoad(city1, city2);
+    if (iterator == NULL) {
         return false;
     }
 
+    Road *road = iterator->data;
+
     road->isDeleted = newIsDeleted;
-    findRoad(city2, city1)->isDeleted = newIsDeleted;
+    ((Road *)findRoad(city2, city1)->data)->isDeleted = newIsDeleted;
 
     return true;
+}
+
+void removeRoadStruct(City *city1, City *city2) {
+    assert(city1);
+    assert(city2);
+
+    eraseList(findRoad(city1, city2), true);
+    eraseList(findRoad(city2, city1), true);
 }
