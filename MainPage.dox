@@ -9,6 +9,12 @@ Uwaga: aktualna treść zadania znajduje się w [Moodle'u](https://moodle.mimuw.
 
 Tegoroczne duże zadanie polega na zaimplementowaniu operacji na mapach drogowych.
 
-TODO
+### Krótki opis rązwiązania
+
+Miasta i drogi krajowe trzymane są na listach. Mapa jest reprezentowana w
+postaci grafu. Każde miasto trzyma listę odcinków drogowych, które
+do niego dochodzą. Drogi krajowe również są trzymane w postaci list.
+Znajdowanie nowych tras dla
+danej drogi krajowej odbywa się za pomocą algorytmu Dijkstry.
 
 */
