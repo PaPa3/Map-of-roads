@@ -16,7 +16,7 @@
 /**
  * Struktura przechuwuje klucze według, których sortowane są dane na stercie.
  * Struktura posiada relację (ważność) będącą porządkiem liniowym.
- * Ważniejszy jest klucz z mniejszą odległością. Jeśli dane dwi struktury
+ * Ważniejszy jest klucz z mniejszą odległością. Jeśli dane dwie struktury
  * @ref HeapKey mają taką samą odległość to ważniejsza jest ta, której
  * najdawniej wybudowany odcinek jest najmłodszy.
  */

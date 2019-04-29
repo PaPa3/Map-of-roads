@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja interfejsu klasy przechowującej stertę (kolejkę priorytetową).
+ *
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
+ * @date 29.04.2019
+ */
+
 #include "heap.h"
 
 #include <stdlib.h>
@@ -6,6 +13,13 @@
 #define DEFAULT_HEAP_ARRAY_MEMORY_SIZE 8
 ///< domyślny rozmiar zaalokowanej tablicy w (@ref HeapKey)
 
+/** @brief Tworzy strukturę.
+ * Tworzy strukturę i ustawia pola struktury na podane.
+ * @param[in] distance          - odległość;
+ * @param[in] oldestRoad        - najdawniej wybudowany odcinek.
+ * @return Wskaźnik na utworzoną strukturę lub NULL, jeśli nie udało się
+ * zaalokować pamięci.
+ */
 HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
     HeapKey *result = malloc(sizeof(HeapKey));
     if (result == NULL) {
@@ -16,18 +30,6 @@ HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
     result->oldestRoad = oldestRoad;
 
     return result;
-}
-
-void deleteHeap(Heap *heap) {
-    assert(heap);
-
-    for (uint32_t i = 1; i <= heap->size; i++) {
-        free(heap->keys[i]);
-    }
-
-    free(heap->data);
-    free(heap->keys);
-    free(heap);
 }
 
 /** @brief Implementuje relację ważności (@ref HeapKey).
@@ -81,6 +83,11 @@ bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
     return true;
 }
 
+/** @brief Tworzy nową strukturę.
+ * Tworzy pustą stertę.
+ * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
+ * zaalokować pamięci.
+ */
 Heap *newHeap() {
     Heap *result = malloc(sizeof(Heap));
     if (result == NULL) {
@@ -98,6 +105,23 @@ Heap *newHeap() {
     }
 
     return result;
+}
+
+/** @brief Usuwa strukturę.
+ * Usuwa strukturę wskazywaną przez @p heap. Funkcja nie usuwa struktur
+ * wskazywanych przez @ref data.
+ * @param[in] heap              – wskaźnik na usuwaną strukturę.
+ */
+void deleteHeap(Heap *heap) {
+    assert(heap);
+
+    for (uint32_t i = 1; i <= heap->size; i++) {
+        free(heap->keys[i]);
+    }
+
+    free(heap->data);
+    free(heap->keys);
+    free(heap);
 }
 
 /** @brief Zamienia miejscami dane w tablicy danej sterty.
@@ -119,6 +143,15 @@ void swapHeapData(Heap *heap, uint32_t position1, uint32_t position2) {
     heap->data[position2] = city;
 }
 
+/** @brief Dodaje element na stertę.
+ * Dodoje miasto (@ref City) na stertę z kluczem (@ref HeapKey).
+ * @param[in,out] heap          - wskaźnik na stertę;
+ * @param[in] distance          - odległość klucza;
+ * @param[in] oldestRoad        - najdawniej wybudowany odcinek klucza;
+ * @param[in] city              - wskażnik na dodawane miasto.
+ * @return Zwraca @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
+ * to zwraca @p false.
+ */
 bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
     assert(heap);
 
@@ -149,6 +182,11 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
     return true;
 }
 
+/** @brief Usuwa wierzch sterty.
+ * Usuwa wierzch sterty. Funkcja nie usuwa struktury
+ * wskazywanej przez @ref data.
+ * @param[in,out] heap          - wskażnik na stertę.
+ */
 void popHeap(Heap *heap) {
     assert(heap);
     assert(heap->size);

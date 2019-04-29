@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja interfejsu klasy przechowującej drogę krajową.
+ *
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
+ * @date 29.04.2019
+ */
+
 #include "route.h"
 #include "heap.h"
 #include "road.h"
@@ -6,17 +13,32 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define INFINITY 1000000000000000ll // zmiejszyłem, może lepiej zwiększyć z powrotem
+#define INFINITY 1000000000000000ll ///< stała oznaczająca nieskończoność
 
-void deleteRouteStruct(Route *route) {
+/** @brief Usuwa strukturę.
+ * @param[in,out] route         - wskażnik na drogę krajową do usunięcia.
+ */
+void deleteRouteModule(Route *route) {
     assert(route);
 
     deleteList(route->cities, false);
     free(route);
 }
 
+/** @brief Porównuje dwie drogi krajowe.
+ * Pierwsza droga jest lepsza jeśli ma mniejszą odległość. Jeśli dane dwie
+ * drogi mają taką samą odległość to lepsza jest ta, której
+ * najdawniej wybudowany odcinek jest najmłodszy.
+ * @param[in] distance1         - odległość pierwszej drogi;
+ * @param[in] oldestRoute1      - najdwawniej wybudowany odcinek pierwszej drogi;
+ * @param[in] distance2         - odległość drugiej drogi;
+ * @param[in] oldestRoute2      - najdwawniej wybudowany odcinek drugiej drogi.
+ * @return Zwraca 0 jeśli obie drogi są tak samo dobre. Zwraca ujemną wartość
+ * jeśli pierwsza droga jest lepsza niż druga. Zwraca dodatnią wartość
+ * w przeciwnym przypadku.
+ */
 int64_t compareRoutes(int64_t distance1, int64_t oldestRoute1,
-                  int64_t distance2, int64_t oldestRoute2) {
+                      int64_t distance2, int64_t oldestRoute2) {
     if (distance1 == distance2) {
         return oldestRoute2 - oldestRoute1;
     }
@@ -24,6 +46,11 @@ int64_t compareRoutes(int64_t distance1, int64_t oldestRoute1,
     return distance1 - distance2;
 }
 
+/** @brief Minimum dwóch liczb.
+ * @param x                     - pierwsza liczba;
+ * @param y                     - druga liczba.
+ * @return Minimum dwóch liczb.
+ */
 int64_t minInt64_t(int64_t x, int64_t y) {
     if (x < y) {
         return x;
@@ -32,8 +59,25 @@ int64_t minInt64_t(int64_t x, int64_t y) {
     }
 }
 
-bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
-                   List *listOfCities, int64_t knownOldestRoad) {
+/** @brief Symuluje algorytm dijsktry.
+ * Znajduję najkrótszą ścieżkę z miasta @p from do miasta @p to oraz do miasta
+ * @p to2 (jeśli @p to2 != NULL). Ścieżka ta nie wchodzi do wierzchołków
+ * znajdujących się na drodce krajowej @p route
+ * (oprócz @p from, @p to oraz @p to2). Jeśli @p knownOldestRoad == 0
+ * to ścieżki porównywane są jak w funkcji @ref compareRoutes. W przeciwnym
+ * wypadku ścieżki porównywane są jedynie po odległość oraz pomijane są wtedy
+ * odcinki drogowe, których rok budowy lub remontu jest starszy niż wartość
+ * @p knownOldestRoad.
+ * @param[in] route             - wskaźnik na drogę krajową;
+ * @param[in] from              - wskaźnik na miasto startowe algorytmu;
+ * @param[in] to                - wskaźnik na docelowe miasto;
+ * @param[in] to2               - wskaźnik na docelowe miasto lub NULL;
+ * @param[in,out] listOfCities  - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] knownOldestRoad   - rok, od którego mamy zacząć uwzględniać odcinki.
+ * @return Wartość @p true lub @p false jeśli nie udało się zaalokować pamięci.
+ */
+bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
+                         List *listOfCities, int64_t knownOldestRoad) {
     assert(route);
     assert(from);
     assert(to);
@@ -137,13 +181,30 @@ bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
     return true;
 }
 
-List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCities) {
+/** @brief Zanjduje drogę między miastami.
+ * Znajduje drogę krajową z miasta @p from do miasta @p to lub do miasta
+ * @p to2 (jeśli @p to2 != NULL). Droga ta nie wchodzi do wierzchołków
+ * znajdujących się na drodce krajowej @p route
+ * (oprócz @p from, @p to oraz @p to2). Wśród istniejących odcinków dróg
+ * wyszukuje najkrótszą drogę. Jeśli jest więcej niż jeden sposób takiego wyboru,
+ * to dla każdego wariantu wyznacza wśród wybranych w nim odcinków dróg ten,
+ * który był najdawniej wybudowany lub remontowany i wybiera wariant
+ * z odcinkiem, który jest najmłodszy.
+ * @param[in] route             - wskaźnik na drogę krajową;
+ * @param[in] from              - wskaźnik na miasto startowe algorytmu;
+ * @param[in] to                - wskaźnik na docelowe miasto;
+ * @param[in] to2               - wskaźnik na docelowe miasto lub NULL;
+ * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @return Wskaźnik na listę zawierającą szukaną drogę lub NULL jeśli droga nie
+ * jest jednoznaczna lub nie udało się zaalokować pamięci.
+ */
+List *findRouteModule(Route *route, City *from, City *to, City *to2, List *listOfCities) {
     assert(route);
     assert(from);
     assert(to);
     assert(listOfCities);
 
-    if (!dijkstraRoute(route, from, to, to2, listOfCities, 0)) {
+    if (!dijkstraRouteModule(route, from, to, to2, listOfCities, 0)) {
         return NULL;
     }
 
@@ -158,7 +219,7 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     if (knownOldestRoad == INFINITY) {
         return NULL;
     }
-    if (!dijkstraRoute(route, from, to, to2, listOfCities, knownOldestRoad)) {
+    if (!dijkstraRouteModule(route, from, to, to2, listOfCities, knownOldestRoad)) {
         return NULL;
     }
 
@@ -193,7 +254,22 @@ List *findRoute(Route *route, City *from, City *to, City *to2, List *listOfCitie
     return result;
 }
 
-Route *newRouteStruct(unsigned routeId, City *city1, City *city2,
+/** @brief Tworzy strukturę.
+ * Tworzy drogę krajową pomiędzy dwoma miastami i nadaje jej podany numer.
+ * Wśród istniejących odcinków dróg wyszukuje najkrótszą drogę. Jeśli jest
+ * więcej niż jeden sposób takiego wyboru, to dla każdego wariantu wyznacza
+ * wśród wybranych w nim odcinków dróg ten, który był najdawniej wybudowany lub
+ * remontowany i wybiera wariant z odcinkiem, który jest najmłodszy.
+ * @param[in] routeId           - numer drogi krajowej;
+ * @param[in] city1             - wskaźnik na pierwsze miasto;
+ * @param[in] city2             - wskaźnik na drugie miasto;
+ * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @return Wartość @p true, jeśli droga krajowa została utworzona.
+ * Wartość @p false, jeśli wystąpił błąd: nie można
+ * jednoznacznie wyznaczyć drogi krajowej między podanymi miastami lub nie udało
+ * się zaalokować pamięci.
+ */
+Route *newRouteModule(unsigned routeId, City *city1, City *city2,
                       List *listOfCities) {
     Route *result = malloc(sizeof(Route));
     if (result == NULL) {
@@ -202,7 +278,7 @@ Route *newRouteStruct(unsigned routeId, City *city1, City *city2,
 
     result->routeId = routeId;
     result->cities = NULL;
-    result->cities = findRoute(result, city1, city2, NULL, listOfCities);
+    result->cities = findRouteModule(result, city1, city2, NULL, listOfCities);
     if (result->cities == NULL) {
         free(result);
         return NULL;
@@ -211,6 +287,21 @@ Route *newRouteStruct(unsigned routeId, City *city1, City *city2,
     return result;
 }
 
+/** @brief Poprawia drogę krajową.
+ * Poprawia drogę krająwą po usunięciu odcinka drogi między dwoma miastami.
+ * Jeśli usunięcie tego odcinka drogi
+ * spowodowało przerwanie ciągu rogi krajowej, to uzupełnia ją
+ * istniejącymi odcinkami dróg w taki sposób, aby była najkrótsza. Jeśli jest
+ * więcej niż jeden sposób takiego uzupełnienia, to dla każdego wariantu
+ * wyznacza wśród dodawanych odcinków drogi ten, który był najdawniej wybudowany
+ * lub remontowany i wybiera wariant z odcinkiem, który jest najmłodszy.
+ * @param[in,out] route         - wskaźnik drogę krajową do poprawienie;
+ * @param[in] city1             - wskaźnik na pierwsze miasto;
+ * @param[in] city2             - wskaźnik na drugie miasto;
+ * @param listOfCities          - wskażnik na wszyskie miasta na danej mapie.
+ * @return Wartość @p true jeśli udało się poprawić drogę krajową, lub @p false,
+ * jeśli nie udało się zaalokować pamięci.
+ */
 bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
                                    List *listOfCities) {
     assert(route);
@@ -236,9 +327,9 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
 
     List *list;
     if (iterator->data == city1) {
-        list = findRoute(route, city1, city2, NULL, listOfCities);
+        list = findRouteModule(route, city1, city2, NULL, listOfCities);
     } else {
-        list = findRoute(route, city2, city1, NULL, listOfCities);
+        list = findRouteModule(route, city2, city1, NULL, listOfCities);
     }
 
     if (list == NULL) {
@@ -254,6 +345,15 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
     return true;
 }
 
+/** @brief Cofa zmiany wywołane przez @ref findNewRouteAfterRemovingRoad.
+ * Cofa zmiany wywołane przez ostatnie użycie
+ * @ref findNewRouteAfterRemovingRoad. Miasta (argumenty funkcji) muszą być
+ * takie samejak przy ostatnim wywołaniu @ref findNewRouteAfterRemovingRoad
+ * dla danej drogi krajowej.
+ * @param[in,out] route         - wskaźnik drogę krajową;
+ * @param[in] city1             - wskaźnik na pierwsze miasto;
+ * @param[in] city2             - wskaźnik na drugie miasto.
+ */
 void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
     assert(route);
     assert(city1);
@@ -280,13 +380,27 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
     }
 }
 
+/**
+ * @brief Wydłuża drogę krajową do podanego miasta.
+ * Dodaje do drogi krajowej nowe odcinki dróg do podanego miasta w taki sposób,
+ * aby nowy fragment drogi krajowej był najkrótszy. Jeśli jest więcej niż jeden
+ * sposób takiego wydłużenia, to dla każdego wariantu wyznacza wśród dodawanych
+ * odcinków dróg ten, który był najdawniej wybudo
+ * @param[in,out] route         - wskaźnik drogę krajową;
+ * @param[in] city              - wskaźnik na miasto;
+ * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @return Wartość @p true, jeśli droga krajowa została wydłużona.
+ * Wartość @p false, jeśli wystąpił błąd: nie można jednoznacznie
+ * wyznaczyć nowego fragmentu drogi krajowej lub nie udało się zaalokować
+ * pamięci.
+ */
 bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities) {
     assert(route);
     assert(city);
     assert(listOfCities);
 
-    List *list = findRoute(route, city, route->cities->begin->data,
-                           route->cities->end->previous->data, listOfCities);
+    List *list = findRouteModule(route, city, route->cities->begin->data,
+                              route->cities->end->previous->data, listOfCities);
     if (list == NULL) {
         return false;
     }
@@ -305,6 +419,13 @@ bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities) {
     return true;
 }
 
+/** @brief Znajduję drogę krajową na liście.
+ * Znajduję drogę krajową o danym numerze na liście.
+ * @param[in] list              - wskaźnik na listę dróg krajowych;
+ * @param[in] routeId           - numer szukanej drogi krajowej.
+ * @return Wskaźnik na szukaną drogę krajową lub NULL, jeśli na liści nie ma
+ * szukanej drogi krajowej.
+ */
 Route *findRouteOnList(List *list, unsigned routeId) {
     assert(list);
 
@@ -319,7 +440,13 @@ Route *findRouteOnList(List *list, unsigned routeId) {
     return NULL;
 }
 
-char *descriptionRoute(Route *route) {
+/** @brief Udostępnia informacje o drodze krajowej.
+ * Zwraca wskaźnik na napis, który zawiera informacje o drodze krajowej. Alokuje
+ * pamięć na ten napis. Zaalokowaną pamięć trzeba zwolnić za pomocą funkcji free.
+ * @param[in] route             - wskaźnik na drogę krajową.
+ * @return Wskaźnik na napis lub NULL, gdy nie udało się zaalokować pamięci.
+ */
+char *descriptionRouteModule(Route *route) {
     assert(route);
 
     StringBuilder *result = newStringBuilder();
@@ -340,7 +467,7 @@ char *descriptionRoute(Route *route) {
     }
 
     while (iterator != route->cities->end->previous) {
-        Road *road = findRoad(iterator->data, iterator->next->data)->data;
+        Road *road = findRoadModule(iterator->data, iterator->next->data)->data;
 
         if (!appendStringBuilderInteger(result, road->length)) {
             deleteStringBuilder(result, true);

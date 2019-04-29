@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja interfejsu klasy przechowującej słowa.
+ *
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
+ * @date 29.04.2019
+ */
+
 #include "string_builder.h"
 
 #include <stdlib.h>
@@ -7,8 +14,19 @@
 #include <string.h>
 
 #define DEFAULT_STRING_BUILDER_MEMORY_SIZE 8
+///< domyślny rozmiar zaalokowanego miejsca na napis w (@ref StringBuilder)
 #define INTEGER_LENGTH 22
+///< pewne górne ograniczenie na długość liczby całkowitej jako słowa
 
+/** @brief Zwiększa zaalokowane miejsce na napis.
+ * Powiększa zaalokowaną miejsce na napis do rozmiaru
+ * @p newMemorySize. Nic nie robi jeśli wartość @p newMemorySize
+ * jest mniejsza niż  dotychczas zaalokowana pamięć.
+ * @param[in,out] ptr               - wskaźnik na strukturę @ref StringBuilder;
+ * @param[in] newMemorySize         - docelowa wielkość zaalokowanej tablicy.
+ * @return Wartość @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
+ * to zwraca @p false.
+ */
 bool resizeStringBuilder(StringBuilder *ptr, uint32_t newMemorySize) {
     assert(ptr);
 
@@ -27,6 +45,10 @@ bool resizeStringBuilder(StringBuilder *ptr, uint32_t newMemorySize) {
     return true;
 }
 
+/** @brief Tworzy strukturę.
+ * @return Wskaźnik na utworzną strukturę lub NULL, jeśli nie udało się
+ * zaalokować pamięci.
+ */
 StringBuilder *newStringBuilder() {
     StringBuilder *result = malloc(sizeof(StringBuilder));
     if (result == NULL) {
@@ -44,6 +66,12 @@ StringBuilder *newStringBuilder() {
     return result;
 }
 
+/** @brief Usuwa strutkturę @ref StringBuilder.
+ * Usuwa strukturę. Jeśli @p freeData wynosi @p true usuwa też przechowywane
+ * słowo.
+ * @param[in,out] string            - wskaźnik na usuwaną strukturę;
+ * @param[in] freeData              - czy należy usunąć dane.
+ */
 void deleteStringBuilder(StringBuilder *string, bool freeData) {
     if (freeData) {
         free(string->data);
@@ -51,7 +79,14 @@ void deleteStringBuilder(StringBuilder *string, bool freeData) {
     free(string);
 }
 
-bool appendStringBuilderString(StringBuilder *string, char *ptr) {
+/** @brief Dodaje słowo do struktury.
+ * Dodaje dane słowo na koniec tworzonego napisu.
+ * @param[in,out] string            - wskaźnik na tworzony napis;
+ * @param[in] ptr                   - wskaźnik na dodawane słowo.
+ * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
+ * nie udało się zaalokować pamięci.
+ */
+bool appendStringBuilderString(StringBuilder *string, const char *ptr) {
     assert(string);
 
     while (strlen(ptr) + 2 + string->size >= string->reservedMemory) {
@@ -66,6 +101,13 @@ bool appendStringBuilderString(StringBuilder *string, char *ptr) {
     return true;
 }
 
+/** @brief Dodaje liczbę do struktury.
+ * Dodaje dane liczbę zrzutowaną na słowo na koniec tworzonego napisu.
+ * @param[in,out] string            - wskaźnik na tworzony napis;
+ * @param[in] integer               - dodawana liczba.
+ * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
+ * nie udało się zaalokować pamięci.
+ */
 bool appendStringBuilderInteger(StringBuilder *string, int64_t integer) {
     assert(string);
 

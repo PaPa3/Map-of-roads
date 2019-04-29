@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja interfejsu klasy przechowującej miasto w mapie dróg krajowych.
+ *
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
+ * @date 29.04.2019
+ */
+
 #include "city.h"
 
 #include <stdlib.h>
@@ -5,6 +12,14 @@
 #include <string.h>
 #include <string.h>
 
+/** @brief Sprawdza czy słowo jest poprawną nazwą miasta.
+ * Sprawdza czy @p string jest poprawną nazwą miasta. Poprawna nazwa
+ * miasta jest niepustym napisem w stylu C niezawierającym kodów
+ * od 0 do 31 ani średnika i zakończonym zerem.
+ * @param[in] string            - wskaźnik na słowo do sprawdzenia.
+ * @return Wartość @p true jeśli słowo jest poprawną nazwą miasta.
+ * Wartość @p false w przeciwnym przypadku.
+ */
 bool isStringValidCityName(const char *string) {
     if (string == NULL || *string == 0) {
         return false;
@@ -38,6 +53,13 @@ uint32_t hashString(const char *string) {
     return result;
 }
 
+/** @brief Tworzy strukturę.
+ * Tworzy strukturę z miastem o nazwie @p name oraz liczy hasz
+ * słowa @p name.
+ * @param[in] name              - wskażnik na nazwę miasta.
+ * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
+ * zaalokować pamięci.
+ */
 City *newCity(const char *name) {
     assert(isStringValidCityName(name));
 
@@ -67,6 +89,10 @@ City *newCity(const char *name) {
     return result;
 }
 
+/** @brief Usuwa Strukutrę.
+ * Usuwa strukturę wskazywaną przez @p city.
+ * @param[in] city              - wskaźnik na usuwaną strukturę.
+ */
 void deleteCity(City *city) {
     assert(city);
 
@@ -75,6 +101,13 @@ void deleteCity(City *city) {
     free(city);
 }
 
+/** @brief Znajduje miasto na liście miast.
+ * Znajduję strukturę @ref City o nazwie @p name na liście miast.
+ * @param[in] listOfCities      - lista struktur @ref City;
+ * @param[in] name              - wskażnik na słowo będące nazwą szukanego miasta.
+ * @return Wskażnik na szukaną strukturę lub NULL jeśli szukane miasto
+ * nie znajduję się na liście.
+ */
 City *findCityOnList(List *listOfCities, const char *name) {
     assert(listOfCities);
     assert(name);
@@ -99,6 +132,14 @@ City *findCityOnList(List *listOfCities, const char *name) {
     return iterator->data;
 }
 
+/** @brief Znajduje miasto na liście miast (tworzy nowe jeśli takiego nie ma).
+ * Znajduję strukturę @ref City o nazwie @p name na liście miast. Jeśli
+ * na liście nie ma szukanego miasta to tworzy nowe o nazwie @p name oraz
+ * dodaje je na listę
+ * @param[in,out] listOfCities   - lista struktur @ref City;
+ * @param[in] name               - wskażnik na słowo będące nazwą szukanego miasta.
+ * @return Wskażnik na szukaną strukturę.
+ */
 City *findCityInsertIfNecessary(List *listOfCities, const char *name) {
     assert(listOfCities);
     assert(name);

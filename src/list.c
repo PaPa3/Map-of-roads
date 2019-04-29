@@ -1,3 +1,10 @@
+/** @file
+ * Implementacja interfejsu klasy przechowującej listę.
+ *
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
+ * @date 29.04.2019
+ */
+
 #include "list.h"
 
 #include <stdio.h>
@@ -6,6 +13,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
+/** @brief Tworzy strukturę.
+ * Towrzy pusty węzeł, który będzie należał do listy wskazywanej przez @p father.
+ * @param[in] father                - wskażnik na listę.
+ * @return Wskaźnik na utowrzoną strukturę lub NULL, jeśli nie udało się
+ * zaalokować pamięci.
+ */
 ListIterator *newListIterator(List *father) {
     assert(father);
 
@@ -22,6 +35,11 @@ ListIterator *newListIterator(List *father) {
     return result;
 }
 
+/** @brief Towrzy strukturę.
+ * Tworzy pustą listę.
+ * @return Wskaźnik na utworzoną listę lub NULL, jeśli nie udało się zaalokować
+ * pamięci.
+ */
 List *newList() {
     List *result = malloc(sizeof(List));
     if (result == NULL) {
@@ -40,11 +58,48 @@ List *newList() {
     return result;
 }
 
+/** @brief Czyści listę.
+ * Czyści listę (ustawię listę na pustą). Usuwa węzły list.
+ * Jeśli @p freeData wynosi @p true to
+ * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
+ * @param[in,out] list              - wskaźnik na listę;
+ * @param[in] freeData              - czy należy usunąć dane.
+ */
+void clearList(List *List, bool freeData) {
+    assert(List);
+
+    while (List->begin != List->end) {
+        eraseList(List->begin, freeData);
+    }
+}
+
+/** @brief Usuwa listę.
+ * Usuwa listę wraz z jej węzłami. Jeśli @p freeData wynosi @p true to
+ * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
+ * @param[in,out] list              - wskaźnik na listę;
+ * @param[in] freeData              - czy należy usunąć dane.
+ */
+void deleteList(List *List, bool freeData) {
+    assert(List);
+
+    clearList(List, freeData);
+    free(List->end);
+    free(List);
+}
+
+/** @brief Usuwa węzeł listy.
+ * Usuwa węzeł listy oraz poprawia listę, do której należy węzeł tak, aby
+ * dalej była poprawną listą. Jeśli @p freeData wynosi @p true to
+ * wywołuje funkcję free() na danych przechowywanych przez węzeł.
+ * @param[in,out] iterator          - wskaźnik na węzeł;
+ * @param[in] freeData              - czy należy usunąć dane.
+ * @return Wskaźnik na węzeł, który był następnikiem usuwanego węzła.
+ */
 ListIterator *eraseList(ListIterator *iterator, bool freeData) {
     assert(iterator);
-    assert(iterator->next != iterator); // nie można usunąć końca
+    assert(iterator->next != iterator); // Nie można usunąć końca listy.
 
-    if (iterator->previous == iterator) { // iterator == początek listy
+    if (iterator->previous == iterator) { // Jesli iterator == początek listy.
         iterator->next->previous = iterator->next;
         iterator->father->begin = iterator->next;
     } else {
@@ -62,11 +117,16 @@ ListIterator *eraseList(ListIterator *iterator, bool freeData) {
     return result;
 }
 
+/** @brief Wstawia węzeł do listy.
+ * Wstawie węzeł @p newIterator przed węzeł @p iterator.
+ * @param[in,out] iterator          - wskaźnik na węzeł przed, który wstawić;
+ * @param[in,out] newIterator       - wskażnik na wstawiany węzeł.
+ */
 void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
     assert(iterator);
     assert(newIterator);
 
-    if (iterator->previous != iterator) { // jesli iterator != poczatek listy
+    if (iterator->previous != iterator) { // Jesli iterator == początek listy.
         newIterator->previous = iterator->previous;
         iterator->previous->next = newIterator;
     } else {
@@ -78,6 +138,13 @@ void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
     newIterator->father = iterator->father;
 }
 
+/** @brief Wstawia dane do listy.
+ * Wstawia dane do listy w miejsce poprzedzające dany węzeł.
+ * @param[in,out] iterator          - wskaźnik na węzeł;
+ * @param[in] newData               - wskaźnik na dane do wstawienia.
+ * @return Wskaźnik na nowo powstały węzeł zawierający wstawiane dane lub NULL,
+ * jeśli nie udało się zaalokować pamięci.
+ */
 ListIterator *insertList(ListIterator *iterator, void *newData) {
     assert(iterator);
 
@@ -92,6 +159,12 @@ ListIterator *insertList(ListIterator *iterator, void *newData) {
     return result;
 }
 
+/** @brief Przenosi listę do innej listy.
+ * Przenosi listę i wstawia ją przed dany węzeł innej listy. W wyniku operacji
+ * przenoszona lista staję się pustą listą.
+ * @param[in,out] iterator          - wskaźnik na węzeł;
+ * @param[in,out] sourceList        - wskażnik na listę do przeniesienia.
+ */
 void spliceList(ListIterator *iterator, List *sourceList) {
     assert(iterator);
     assert(sourceList);
@@ -106,22 +179,11 @@ void spliceList(ListIterator *iterator, List *sourceList) {
     sourceList->end->previous = sourceList->end;
 }
 
-void clearList(List *List, bool freeData) {
-    assert(List);
-
-    while (List->begin != List->end) {
-        eraseList(List->begin, freeData);
-    }
-}
-
-void deleteList(List *List, bool freeData) {
-    assert(List);
-
-    clearList(List, freeData);
-    free(List->end);
-    free(List);
-}
-
+/** @brief Zamienia miejscami dwa wskaźniki.
+ * Zamienia miejscami dwa wskaźniki na @ref ListIterator.
+ * @param[in,out] iterator1         - wskaźnik na pierwszy wskaźnik do zamiany;
+ * @param[in,out] iterator2         - wskaźnik na drugi wskaźnik do zamiany.
+ */
 void swapListIteratorPointers(ListIterator **iterator1, ListIterator **iterator2) {
     assert(iterator1);
     assert(iterator2);
@@ -131,6 +193,10 @@ void swapListIteratorPointers(ListIterator **iterator1, ListIterator **iterator2
     *iterator2 = ptr;
 }
 
+/** @brief Odwraca listę.
+ * Odwraca kolejność elementów na liście.
+ * @param[in,out] list              - wskaźnik na listę.
+ */
 void reverseList(List *list) {
     assert(list);
 
@@ -149,4 +215,16 @@ void reverseList(List *list) {
     list->begin = list->end->previous;
     list->begin->previous = list->begin;
     list->end->previous = iterator;
+}
+
+/** @brief Ostatni element listy.
+ * Zwraca wskaźnik na dane ostatniego węzła na liście.
+ * @param[in] list                  - wskaźnik na listę.
+ * @return Wskaźnik na szukane dane.
+ */
+void *backList(List *list) {
+    assert(list);
+    assert(list->begin != list->end); // Lista nie może być pusta.
+
+    return list->end->previous->data;
 }
