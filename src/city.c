@@ -37,7 +37,7 @@ bool isStringValidCityName(const char *string) {
 
 /** @brief Liczy hasz słowa.
  * Liczy hasz słowa @p string.
- * @param string[in]            - wskażnik na słowo.
+ * @param[in] string            - wskażnik na słowo.
  * @return Hasz słowa.
  */
 uint32_t hashString(const char *string) {

@@ -117,8 +117,8 @@ bool isValidInput(Map *map, const char *cityName1, const char *cityName2) {
  * Jeśli któreś z podanych miast nie istnieje, to dodaje go do mapy, a następnie
  * dodaje do mapy odcinek drogi między tymi miastami.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
- * @param[in] city1      – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] city2      – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
  * @param[in] length     – długość w km odcinka drogi;
  * @param[in] builtYear  – rok budowy odcinka drogi.
  * @return Wartość @p true, jeśli odcinek drogi został dodany.
@@ -149,8 +149,8 @@ bool addRoad(Map *map, const char *cityName1, const char *cityName2,
  * Dla odcinka drogi między dwoma miastami zmienia rok jego ostatniego remontu
  * lub ustawia ten rok, jeśli odcinek nie był jeszcze remontowany.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
- * @param[in] city1      – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] city2      – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
  * @param[in] repairYear – rok ostatniego remontu odcinka drogi.
  * @return Wartość @p true, jeśli modyfikacja się powiodła.
  * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
@@ -180,8 +180,8 @@ bool repairRoad(Map *map, const char *cityName1, const char *cityName2, int repa
  * remontowany i wybiera wariant z odcinkiem, który jest najmłodszy.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
  * @param[in] routeId    – numer drogi krajowej;
- * @param[in] city1      – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] city2      – wskaźnik na napis reprezentujący nazwę miasta.
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta.
  * @return Wartość @p true, jeśli droga krajowa została utworzona.
  * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
  * wartość, istnieje już droga krajowa o podanym numerze, któreś z podanych
@@ -226,7 +226,7 @@ bool newRoute(Map *map, unsigned routeId,
  * wariant z odcinkiem, który jest najmłodszy.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
  * @param[in] routeId    – numer drogi krajowej;
- * @param[in] city       – wskaźnik na napis reprezentujący nazwę miasta.
+ * @param[in] cityName   – wskaźnik na napis reprezentujący nazwę miasta.
  * @return Wartość @p true, jeśli droga krajowa została wydłużona.
  * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
  * nazwę, nie istnieje droga krajowa o podanym numerze, nie ma miasta o podanej
@@ -265,8 +265,8 @@ bool extendRoute(Map *map, unsigned routeId, const char *cityName) {
  * wyznacza wśród dodawanych odcinków drogi ten, który był najdawniej wybudowany
  * lub remontowany i wybiera wariant z odcinkiem, który jest najmłodszy.
  * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
- * @param[in] city1      – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] city2      – wskaźnik na napis reprezentujący nazwę miasta.
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta.
  * @return Wartość @p true, jeśli odcinek drogi został usunięty.
  * Wartość @p false, jeśli z powodu błędu nie można usunąć tego odcinka drogi:
  * któryś z parametrów ma niepoprawną wartość, nie ma któregoś z podanych miast,

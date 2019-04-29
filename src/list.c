@@ -65,11 +65,11 @@ List *newList() {
  * @param[in,out] list              - wskaźnik na listę;
  * @param[in] freeData              - czy należy usunąć dane.
  */
-void clearList(List *List, bool freeData) {
-    assert(List);
+void clearList(List *list, bool freeData) {
+    assert(list);
 
-    while (List->begin != List->end) {
-        eraseList(List->begin, freeData);
+    while (list->begin != list->end) {
+        eraseList(list->begin, freeData);
     }
 }
 
@@ -79,12 +79,12 @@ void clearList(List *List, bool freeData) {
  * @param[in,out] list              - wskaźnik na listę;
  * @param[in] freeData              - czy należy usunąć dane.
  */
-void deleteList(List *List, bool freeData) {
-    assert(List);
+void deleteList(List *list, bool freeData) {
+    assert(list);
 
-    clearList(List, freeData);
-    free(List->end);
-    free(List);
+    clearList(list, freeData);
+    free(list->end);
+    free(list);
 }
 
 /** @brief Usuwa węzeł listy.

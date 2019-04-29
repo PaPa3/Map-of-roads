@@ -51,9 +51,9 @@ bool isHeapKeyMoreImportantThan(HeapKey *key, HeapKey *other) {
 }
 
 /** @brief Zwiększa zaalokowaną tablicę danej sterty.
- * Powiększa zaalokowaną tablicę (@ref keys oraz @ref data) do rozmiaru
- * @p newMemory. Nic nie robi jeśli wartość @p newMemory jest mniejsza niż
- * dotychczas zaalokowana pamięć.
+ * Powiększa zaalokowaną tablicę (@ref Heap.keys oraz @ref Heap.data) do
+ * rozmiaru @p newMemory. Nic nie robi jeśli wartość @p newMemory jest mniejsza
+ * niż dotychczas zaalokowana pamięć.
  * @param[in, out] heap         - wskaźnik na stertę;
  * @param[in] newMemory         - docelowa wielkość zaalokowanej tablicy.
  * @return Wartość @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
@@ -109,7 +109,7 @@ Heap *newHeap() {
 
 /** @brief Usuwa strukturę.
  * Usuwa strukturę wskazywaną przez @p heap. Funkcja nie usuwa struktur
- * wskazywanych przez @ref data.
+ * wskazywanych przez @ref Heap.data.
  * @param[in] heap              – wskaźnik na usuwaną strukturę.
  */
 void deleteHeap(Heap *heap) {
@@ -184,7 +184,7 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
 
 /** @brief Usuwa wierzch sterty.
  * Usuwa wierzch sterty. Funkcja nie usuwa struktury
- * wskazywanej przez @ref data.
+ * wskazywanej przez @ref Heap.data.
  * @param[in,out] heap          - wskażnik na stertę.
  */
 void popHeap(Heap *heap) {

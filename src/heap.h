@@ -48,7 +48,7 @@ Heap *newHeap();
 
 /** @brief Usuwa strukturę.
  * Usuwa strukturę wskazywaną przez @p heap. Funkcja nie usuwa struktur
- * wskazywanych przez @ref data.
+ * wskazywanych przez @ref Heap.data.
  * @param[in] heap              – wskaźnik na usuwaną strukturę.
  */
 void deleteHeap(Heap *heap);
@@ -66,7 +66,7 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city);
 
 /** @brief Usuwa wierzch sterty.
  * Usuwa wierzch sterty. Funkcja nie usuwa struktury
- * wskazywanej przez @ref data.
+ * wskazywanej przez @ref Heap.data.
  * @param[in,out] heap          - wskażnik na stertę.
  */
 void popHeap(Heap *heap);
