@@ -88,6 +88,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         return false;
     }
 
+    /* Ustawiamy odległości miast na nieskończość. */
     ListIterator *iterator = listOfCities->begin;
     while (iterator != listOfCities->end) {
         ((City *)iterator->data)->distance = INFINITY;
@@ -95,6 +96,8 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         iterator = iterator->next;
     }
 
+    /* Ustawiamy odległości miast na drodze krajowe na -1
+     * przez co ich nie odwiedzimy. */
     if (route->cities != NULL) {
         iterator = route->cities->begin;
         while (iterator != route->cities->end) {
@@ -106,12 +109,16 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
     from->distance = 0;
     from->oldestRoadOnRoute = INFINITY;
     from->isRouteUnequivocal = true;
+    if (!pushHeap(heap, 0, INFINITY, from)) {
+        deleteHeap(heap);
+        return false;
+    }
+
+    /* Ustawiamy odległości miast docelowych, aby moć je odwiedzić nawet
+     * jeśli są na drodze krajowej. */
     to->distance = INFINITY;
     if (to2 != NULL) {
         to2->distance = INFINITY;
-    }
-    if (!pushHeap(heap, 0, INFINITY, from)) {
-        deleteHeap(heap);
     }
 
     City *ptr;
@@ -198,7 +205,8 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
  * @return Wskaźnik na listę zawierającą szukaną drogę lub NULL jeśli droga nie
  * jest jednoznaczna lub nie udało się zaalokować pamięci.
  */
-List *findRouteModule(Route *route, City *from, City *to, City *to2, List *listOfCities) {
+List *findRouteModule(Route *route, City *from, City *to, City *to2,
+                      List *listOfCities) {
     assert(route);
     assert(from);
     assert(to);
@@ -211,32 +219,42 @@ List *findRouteModule(Route *route, City *from, City *to, City *to2, List *listO
     int64_t knownOldestRoad = to->oldestRoadOnRoute;
     if (to2 != NULL) {
         if (to->distance == to2->distance) {
-            knownOldestRoad = -minInt64_t(-knownOldestRoad, -to2->oldestRoadOnRoute); //max
+            knownOldestRoad = -minInt64_t(-knownOldestRoad,
+                                          -to2->oldestRoadOnRoute); //max
         } else if (to->distance > to2->distance) {
             knownOldestRoad = to2->oldestRoadOnRoute;
         }
     }
+
     if (knownOldestRoad == INFINITY) {
         return NULL;
     }
-    if (!dijkstraRouteModule(route, from, to, to2, listOfCities, knownOldestRoad)) {
+
+    if (!dijkstraRouteModule(route, from, to, to2, listOfCities,
+                             knownOldestRoad)) {
         return NULL;
     }
 
     if (to2 != NULL) {
         int64_t c = compareRoutes(to->distance, to->oldestRoadOnRoute,
-                              to2->distance, to2->oldestRoadOnRoute);
+                                  to2->distance, to2->oldestRoadOnRoute);
         if (c == 0) {
             return NULL;
         } else if (c > 0) {
             to = to2;
         }
     }
+
     if (to->distance == INFINITY || !to->isRouteUnequivocal) {
         return NULL;
     }
 
+    /* Odzyskiwanie trasy szukanej drogi. */
     List *result = newList();
+    if (result == NULL) {
+        return NULL;
+    }
+
     City *ptr = to;
     while (true) {
         if (insertList(result->begin, ptr) == NULL) {
@@ -317,7 +335,8 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
         iterator = iterator->next;
     }
 
-    if (iterator == route->cities->end || iterator->next == route->cities->end) {
+    if (iterator == route->cities->end ||
+            iterator->next == route->cities->end) {
         return true;
     }
 
@@ -369,10 +388,6 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
         iterator = iterator->next;
     }
 
-    if (iterator == route->cities->end) {//TODO chyba do usuniecia to
-        return;
-    }
-
     iterator = iterator->next;
     while (iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
@@ -400,12 +415,12 @@ bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities) {
     assert(listOfCities);
 
     List *list = findRouteModule(route, city, route->cities->begin->data,
-                              route->cities->end->previous->data, listOfCities);
+                                 backList(route->cities), listOfCities);
     if (list == NULL) {
         return false;
     }
 
-    if (list->end->previous->data == route->cities->begin->data) {
+    if (backList(list) == route->cities->begin->data) {
         eraseList(list->end->previous, false);
         spliceList(route->cities->begin, list);
         deleteList(list, false);
@@ -488,6 +503,7 @@ char *descriptionRouteModule(Route *route) {
         }
     }
 
+    /* Usuwamy niepotrzebny średnik z napisu. */
     result->data[result->size - 1] = 0;
     char *ptr = result->data;
     deleteStringBuilder(result, false);

@@ -38,8 +38,8 @@ bool resizeStringBuilder(StringBuilder *ptr, uint32_t newMemorySize) {
     if (string == NULL) {
         return false;
     }
-    ptr->data = string;
 
+    ptr->data = string;
     ptr->reservedMemory = newMemorySize;
 
     return true;
@@ -80,7 +80,7 @@ void deleteStringBuilder(StringBuilder *string, bool freeData) {
 }
 
 /** @brief Dodaje słowo do struktury.
- * Dodaje dane słowo na koniec tworzonego napisu.
+ * Dodaje dane słowo i znak ';' na koniec tworzonego napisu.
  * @param[in,out] string            - wskaźnik na tworzony napis;
  * @param[in] ptr                   - wskaźnik na dodawane słowo.
  * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
@@ -102,7 +102,8 @@ bool appendStringBuilderString(StringBuilder *string, const char *ptr) {
 }
 
 /** @brief Dodaje liczbę do struktury.
- * Dodaje dane liczbę zrzutowaną na słowo na koniec tworzonego napisu.
+ * Dodaje dane liczbę zrzutowaną na słowo i znak ';'
+ * na koniec tworzonego napisu.
  * @param[in,out] string            - wskaźnik na tworzony napis;
  * @param[in] integer               - dodawana liczba.
  * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli

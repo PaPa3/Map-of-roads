@@ -164,6 +164,7 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
 
     if (position == heap->reservedMemory) {
         if (!reserveMemoryHeap(heap, heap->reservedMemory * 2)) {
+            free(key);
             return false;
         }
     }

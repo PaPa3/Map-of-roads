@@ -64,17 +64,17 @@ void deleteMap(Map *map) {
         return;
     }
 
-    ListIterator *ptr = map->cities->begin;
-    while (ptr != map->cities->end) {
-        deleteCity(ptr->data);
-        ptr = ptr->next;
+    ListIterator *iterator = map->cities->begin;
+    while (iterator != map->cities->end) {
+        deleteCity(iterator->data);
+        iterator = iterator->next;
     }
     deleteList(map->cities, false);
 
-    ptr = map->routes->begin;
-    while (ptr != map->routes->end) {
-        deleteRouteModule(ptr->data);
-        ptr = ptr->next;
+    iterator = map->routes->begin;
+    while (iterator != map->routes->end) {
+        deleteRouteModule(iterator->data);
+        iterator = iterator->next;
     }
     deleteList(map->routes, false);
 
@@ -214,7 +214,11 @@ bool newRoute(Map *map, unsigned routeId,
         return false;
     }
 
-    insertList(map->routes->end, route);
+    if (insertList(map->routes->end, route) == NULL) {
+       deleteRouteModule(route);
+       return false;
+    }
+
     return true;
 }
 

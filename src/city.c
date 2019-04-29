@@ -46,7 +46,7 @@ uint32_t hashString(const char *string) {
     uint64_t result = 0;
 
     while (*string) {
-        result = (result * 257 + *string) % 1000000007;
+        result = (result * 2333 + 1000 + *string) % 1000000007;
         string++;
     }
 
@@ -157,7 +157,7 @@ City *findCityInsertIfNecessary(List *listOfCities, const char *name) {
             return NULL;
         }
 
-        return listOfCities->end->previous->data;
+        return backList(listOfCities);
     }
 
     return result;

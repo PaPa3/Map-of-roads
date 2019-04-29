@@ -64,7 +64,7 @@ bool setRoadIsDeletedTo(City *city1, City *city2, bool newIsDeleted);
 ListIterator *findRoadModule(City *from, City *to);
 
 /** @brief Usuwa drogę.
- * Usuwa drogę pomiędzy danymi miastami.
+ * Usuwa istniejącą drogę pomiędzy danymi miastami.
  * @param[in,out] city1             - wskaźnik na pierwsze miasto;
  * @param[in,out] city2             - wskaźnik na drugie miasto.
  */

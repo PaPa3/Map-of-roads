@@ -58,35 +58,6 @@ List *newList() {
     return result;
 }
 
-/** @brief Czyści listę.
- * Czyści listę (ustawię listę na pustą). Usuwa węzły list.
- * Jeśli @p freeData wynosi @p true to
- * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
- * @param[in,out] list              - wskaźnik na listę;
- * @param[in] freeData              - czy należy usunąć dane.
- */
-void clearList(List *list, bool freeData) {
-    assert(list);
-
-    while (list->begin != list->end) {
-        eraseList(list->begin, freeData);
-    }
-}
-
-/** @brief Usuwa listę.
- * Usuwa listę wraz z jej węzłami. Jeśli @p freeData wynosi @p true to
- * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
- * @param[in,out] list              - wskaźnik na listę;
- * @param[in] freeData              - czy należy usunąć dane.
- */
-void deleteList(List *list, bool freeData) {
-    assert(list);
-
-    clearList(list, freeData);
-    free(list->end);
-    free(list);
-}
-
 /** @brief Usuwa węzeł listy.
  * Usuwa węzeł listy oraz poprawia listę, do której należy węzeł tak, aby
  * dalej była poprawną listą. Jeśli @p freeData wynosi @p true to
@@ -117,6 +88,35 @@ ListIterator *eraseList(ListIterator *iterator, bool freeData) {
     return result;
 }
 
+/** @brief Czyści listę.
+ * Czyści listę (ustawię listę na pustą). Usuwa węzły list.
+ * Jeśli @p freeData wynosi @p true to
+ * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
+ * @param[in,out] list              - wskaźnik na listę;
+ * @param[in] freeData              - czy należy usunąć dane.
+ */
+void clearList(List *list, bool freeData) {
+    assert(list);
+
+    while (list->begin != list->end) {
+        eraseList(list->begin, freeData);
+    }
+}
+
+/** @brief Usuwa listę.
+ * Usuwa listę wraz z jej węzłami. Jeśli @p freeData wynosi @p true to
+ * wywołuje funkcję free() na danych przechowywanych przez węzły listy.
+ * @param[in,out] list              - wskaźnik na listę;
+ * @param[in] freeData              - czy należy usunąć dane.
+ */
+void deleteList(List *list, bool freeData) {
+    assert(list);
+
+    clearList(list, freeData);
+    free(list->end);
+    free(list);
+}
+
 /** @brief Wstawia węzeł do listy.
  * Wstawie węzeł @p newIterator przed węzeł @p iterator.
  * @param[in,out] iterator          - wskaźnik na węzeł przed, który wstawić;
@@ -126,7 +126,7 @@ void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
     assert(iterator);
     assert(newIterator);
 
-    if (iterator->previous != iterator) { // Jesli iterator == początek listy.
+    if (iterator->previous != iterator) { // Jesli iterator != początek listy.
         newIterator->previous = iterator->previous;
         iterator->previous->next = newIterator;
     } else {

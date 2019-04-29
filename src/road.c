@@ -35,7 +35,8 @@ Road *newRoad(City *destination, unsigned length, int builtYear) {
 }
 
 /** @brief Dodaje drogę.
- * Dodaje drogę z miasta do innego miasta.
+ * Dodaje drogę z miasta do innego miasta. Droga zostaje dodane na początek
+ * listy dróg z danego miasta.
  * @param[in,out] from              - miasto początkowego odcinka drogowego;
  * @param[in,out] to                - miasto docelowe odcinka drogowego;
  * @param[in] length                - długość odcinka drogowego;
@@ -134,7 +135,7 @@ bool repairRoadModule(City *city1, City *city2, int repairYear) {
     }
 
     Road *road = iterator->data;
-    if(road->buildYearOrLastRepairYear > repairYear) {
+    if (road->buildYearOrLastRepairYear > repairYear) {
         return false;
     }
 
@@ -163,15 +164,15 @@ bool setRoadIsDeletedTo(City *city1, City *city2, bool newIsDeleted) {
     }
 
     Road *road = iterator->data;
-
     road->isDeleted = newIsDeleted;
+
     ((Road *)findRoadModule(city2, city1)->data)->isDeleted = newIsDeleted;
 
     return true;
 }
 
 /** @brief Usuwa drogę.
- * Usuwa drogę pomiędzy danymi miastami.
+ * Usuwa istniejącą drogę pomiędzy danymi miastami.
  * @param[in,out] city1             - wskaźnik na pierwsze miasto;
  * @param[in,out] city2             - wskaźnik na drugie miasto.
  */
