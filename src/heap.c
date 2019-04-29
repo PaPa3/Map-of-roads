@@ -34,8 +34,8 @@ HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
 
 /** @brief Implementuje relację ważności (@ref HeapKey).
  * Sprawdza czy @p key jest ważniejszy niż @p other.
- * @param[in] key               - wskażnik na @ref HeapKey do porównania
- * @param[in] other             - wskażnik na @ref HeapKey do porównania
+ * @param[in] key               - wskaźnik na @ref HeapKey do porównania
+ * @param[in] other             - wskaźnik na @ref HeapKey do porównania
  * @return @p true jeśli @p key jest ważniejszy niż @p other. @p false
  * w przeciwnym przypadku.
  */
@@ -144,11 +144,11 @@ void swapHeapData(Heap *heap, uint32_t position1, uint32_t position2) {
 }
 
 /** @brief Dodaje element na stertę.
- * Dodoje miasto (@ref City) na stertę z kluczem (@ref HeapKey).
+ * Dodaje miasto (@ref City) na stertę z kluczem (@ref HeapKey).
  * @param[in,out] heap          - wskaźnik na stertę;
  * @param[in] distance          - odległość klucza;
  * @param[in] oldestRoad        - najdawniej wybudowany odcinek klucza;
- * @param[in] city              - wskażnik na dodawane miasto.
+ * @param[in] city              - wskaźnik na dodawane miasto.
  * @return Zwraca @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
  * to zwraca @p false.
  */
@@ -186,7 +186,7 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
 /** @brief Usuwa wierzch sterty.
  * Usuwa wierzch sterty. Funkcja nie usuwa struktury
  * wskazywanej przez @ref Heap.data.
- * @param[in,out] heap          - wskażnik na stertę.
+ * @param[in,out] heap          - wskaźnik na stertę.
  */
 void popHeap(Heap *heap) {
     assert(heap);

@@ -81,7 +81,7 @@ void deleteMap(Map *map) {
     free(map);
 }
 
-/** @brief Sprawdza zgodność dancyh ze specyfikacją zadania.
+/** @brief Sprawdza zgodność danych ze specyfikacją zadania.
  * Poprawne dane to takie, w których wskaźnik na mapę nie jest równy NULL,
  * wskaźniki na napisy, które nie są równe NULL, wskazują na poprawny napis
  * oraz jeśli oba wskaźniki na napisy nie są równe NULL, to napisy muszą

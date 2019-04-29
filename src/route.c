@@ -16,7 +16,7 @@
 #define INFINITY 1000000000000000ll ///< stała oznaczająca nieskończoność
 
 /** @brief Usuwa strukturę.
- * @param[in,out] route         - wskażnik na drogę krajową do usunięcia.
+ * @param[in,out] route         - wskaźnik na drogę krajową do usunięcia.
  */
 void deleteRouteModule(Route *route) {
     assert(route);
@@ -30,9 +30,9 @@ void deleteRouteModule(Route *route) {
  * drogi mają taką samą odległość to lepsza jest ta, której
  * najdawniej wybudowany odcinek jest najmłodszy.
  * @param[in] distance1         - odległość pierwszej drogi;
- * @param[in] oldestRoute1      - najdwawniej wybudowany odcinek pierwszej drogi;
+ * @param[in] oldestRoute1      - najdawniej wybudowany odcinek pierwszej drogi;
  * @param[in] distance2         - odległość drugiej drogi;
- * @param[in] oldestRoute2      - najdwawniej wybudowany odcinek drugiej drogi.
+ * @param[in] oldestRoute2      - najdawniej wybudowany odcinek drugiej drogi.
  * @return Zwraca 0 jeśli obie drogi są tak samo dobre. Zwraca ujemną wartość
  * jeśli pierwsza droga jest lepsza niż druga. Zwraca dodatnią wartość
  * w przeciwnym przypadku.
@@ -62,7 +62,7 @@ int64_t minInt64_t(int64_t x, int64_t y) {
 /** @brief Symuluje algorytm dijsktry.
  * Znajduję najkrótszą ścieżkę z miasta @p from do miasta @p to oraz do miasta
  * @p to2 (jeśli @p to2 != NULL). Ścieżka ta nie wchodzi do wierzchołków
- * znajdujących się na drodce krajowej @p route
+ * znajdujących się na drodze krajowej @p route
  * (oprócz @p from, @p to oraz @p to2). Jeśli @p knownOldestRoad == 0
  * to ścieżki porównywane są jak w funkcji @ref compareRoutes. W przeciwnym
  * wypadku ścieżki porównywane są jedynie po odległość oraz pomijane są wtedy
@@ -72,7 +72,7 @@ int64_t minInt64_t(int64_t x, int64_t y) {
  * @param[in] from              - wskaźnik na miasto startowe algorytmu;
  * @param[in] to                - wskaźnik na docelowe miasto;
  * @param[in] to2               - wskaźnik na docelowe miasto lub NULL;
- * @param[in,out] listOfCities  - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in,out] listOfCities  - wskaźnik na wszystkie miasta na danej mapie.
  * @param[in] knownOldestRoad   - rok, od którego mamy zacząć uwzględniać odcinki.
  * @return Wartość @p true lub @p false jeśli nie udało się zaalokować pamięci.
  */
@@ -88,7 +88,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         return false;
     }
 
-    /* Ustawiamy odległości miast na nieskończość. */
+    /* Ustawiamy odległości miast na nieskończoność. */
     ListIterator *iterator = listOfCities->begin;
     while (iterator != listOfCities->end) {
         ((City *)iterator->data)->distance = INFINITY;
@@ -114,7 +114,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         return false;
     }
 
-    /* Ustawiamy odległości miast docelowych, aby moć je odwiedzić nawet
+    /* Ustawiamy odległości miast docelowych, aby móc je odwiedzić nawet
      * jeśli są na drodze krajowej. */
     to->distance = INFINITY;
     if (to2 != NULL) {
@@ -201,7 +201,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
  * @param[in] from              - wskaźnik na miasto startowe algorytmu;
  * @param[in] to                - wskaźnik na docelowe miasto;
  * @param[in] to2               - wskaźnik na docelowe miasto lub NULL;
- * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] listOfCities      - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wskaźnik na listę zawierającą szukaną drogę lub NULL jeśli droga nie
  * jest jednoznaczna lub nie udało się zaalokować pamięci.
  */
@@ -281,7 +281,7 @@ List *findRouteModule(Route *route, City *from, City *to, City *to2,
  * @param[in] routeId           - numer drogi krajowej;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
  * @param[in] city2             - wskaźnik na drugie miasto;
- * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] listOfCities      - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true, jeśli droga krajowa została utworzona.
  * Wartość @p false, jeśli wystąpił błąd: nie można
  * jednoznacznie wyznaczyć drogi krajowej między podanymi miastami lub nie udało
@@ -306,7 +306,7 @@ Route *newRouteModule(unsigned routeId, City *city1, City *city2,
 }
 
 /** @brief Poprawia drogę krajową.
- * Poprawia drogę krająwą po usunięciu odcinka drogi między dwoma miastami.
+ * Poprawia drogę krajową po usunięciu odcinka drogi między dwoma miastami.
  * Jeśli usunięcie tego odcinka drogi
  * spowodowało przerwanie ciągu rogi krajowej, to uzupełnia ją
  * istniejącymi odcinkami dróg w taki sposób, aby była najkrótsza. Jeśli jest
@@ -316,7 +316,7 @@ Route *newRouteModule(unsigned routeId, City *city1, City *city2,
  * @param[in,out] route         - wskaźnik drogę krajową do poprawienie;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
  * @param[in] city2             - wskaźnik na drugie miasto;
- * @param listOfCities          - wskażnik na wszyskie miasta na danej mapie.
+ * @param listOfCities          - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true jeśli udało się poprawić drogę krajową, lub @p false,
  * jeśli nie udało się zaalokować pamięci.
  */
@@ -367,7 +367,7 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
 /** @brief Cofa zmiany wywołane przez @ref findNewRouteAfterRemovingRoad.
  * Cofa zmiany wywołane przez ostatnie użycie
  * @ref findNewRouteAfterRemovingRoad. Miasta (argumenty funkcji) muszą być
- * takie samejak przy ostatnim wywołaniu @ref findNewRouteAfterRemovingRoad
+ * takie same jak przy ostatnim wywołaniu @ref findNewRouteAfterRemovingRoad
  * dla danej drogi krajowej.
  * @param[in,out] route         - wskaźnik drogę krajową;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
@@ -400,10 +400,10 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
  * Dodaje do drogi krajowej nowe odcinki dróg do podanego miasta w taki sposób,
  * aby nowy fragment drogi krajowej był najkrótszy. Jeśli jest więcej niż jeden
  * sposób takiego wydłużenia, to dla każdego wariantu wyznacza wśród dodawanych
- * odcinków dróg ten, który był najdawniej wybudo
+ * odcinków dróg ten, który był najdawniej wybudowany.
  * @param[in,out] route         - wskaźnik drogę krajową;
  * @param[in] city              - wskaźnik na miasto;
- * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] listOfCities      - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true, jeśli droga krajowa została wydłużona.
  * Wartość @p false, jeśli wystąpił błąd: nie można jednoznacznie
  * wyznaczyć nowego fragmentu drogi krajowej lub nie udało się zaalokować

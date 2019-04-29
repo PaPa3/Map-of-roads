@@ -17,15 +17,15 @@ typedef struct List List;
  */
 typedef struct ListIterator {
     struct ListIterator *next;      ///< wskaźnik na kolejny węzeł listy
-    struct ListIterator *previous;  ///< wskażnik na poprzedni węzeł listy
-    List *father;                   ///< wskażnik na listę do której należy węzeł
-    void *data;                     ///< wskażnik na dane przechowywane przez węzeł
+    struct ListIterator *previous;  ///< wskaźnik na poprzedni węzeł listy
+    List *father;                   ///< wskaźnik na listę do której należy węzeł
+    void *data;                     ///< wskaźnik na dane przechowywane przez węzeł
 } ListIterator;
 
 /**
  * Struktura przechowująca iterator listę.
  * Lista jest reprezentowana przez pierwszy i ostatni węzeł. Ostatni węzeł
- * jest straźnikiem (nie przechowuję żadncyh danych). Dla pusteh listy poczętek
+ * jest strażnikiem (nie przechowuję żadnych danych). Dla pustej listy początek
  * jest równy końcowi.
  */
 typedef struct List {
@@ -33,7 +33,7 @@ typedef struct List {
     ListIterator *end;              ///< wskaźnik na koniec listy
 } List;
 
-/** @brief Towrzy strukturę.
+/** @brief Tworzy strukturę.
  * Tworzy pustą listę.
  * @return Wskaźnik na utworzoną listę lub NULL, jeśli nie udało się zaalokować
  * pamięci.
@@ -80,7 +80,7 @@ ListIterator *insertList(ListIterator *iterator, void *newData);
  * Przenosi listę i wstawia ją przed dany węzeł innej listy. W wyniku operacji
  * przenoszona lista staję się pustą listą.
  * @param[in,out] iterator          - wskaźnik na węzeł;
- * @param[in,out] sourceList        - wskażnik na listę do przeniesienia.
+ * @param[in,out] sourceList        - wskaźnik na listę do przeniesienia.
  */
 void spliceList(ListIterator *iterator, List *sourceList);
 

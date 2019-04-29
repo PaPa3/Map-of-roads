@@ -31,7 +31,7 @@ typedef struct Route {
  * @param[in] routeId           - numer drogi krajowej;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
  * @param[in] city2             - wskaźnik na drugie miasto;
- * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] listOfCities      - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true, jeśli droga krajowa została utworzona.
  * Wartość @p false, jeśli wystąpił błąd: nie można
  * jednoznacznie wyznaczyć drogi krajowej między podanymi miastami lub nie udało
@@ -41,12 +41,12 @@ Route *newRouteModule(unsigned routeId, City *city1, City *city2,
                       List *listOfCities);
 
 /** @brief Usuwa strukturę.
- * @param[in,out] route         - wskażnik na drogę krajową do usunięcia.
+ * @param[in,out] route         - wskaźnik na drogę krajową do usunięcia.
  */
 void deleteRouteModule(Route *route);
 
 /** @brief Poprawia drogę krajową.
- * Poprawia drogę krająwą po usunięciu odcinka drogi między dwoma miastami.
+ * Poprawia drogę krajową po usunięciu odcinka drogi między dwoma miastami.
  * Jeśli usunięcie tego odcinka drogi
  * spowodowało przerwanie ciągu rogi krajowej, to uzupełnia ją
  * istniejącymi odcinkami dróg w taki sposób, aby była najkrótsza. Jeśli jest
@@ -56,7 +56,7 @@ void deleteRouteModule(Route *route);
  * @param[in,out] route         - wskaźnik drogę krajową do poprawienie;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
  * @param[in] city2             - wskaźnik na drugie miasto;
- * @param listOfCities          - wskażnik na wszyskie miasta na danej mapie.
+ * @param listOfCities          - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true jeśli udało się poprawić drogę krajową, lub @p false,
  * jeśli nie udało się zaalokować pamięci.
  */
@@ -66,7 +66,7 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
 /** @brief Cofa zmiany wywołane przez @ref findNewRouteAfterRemovingRoad.
  * Cofa zmiany wywołane przez ostatnie użycie
  * @ref findNewRouteAfterRemovingRoad. Miasta (argumenty funkcji) muszą być
- * takie samejak przy ostatnim wywołaniu @ref findNewRouteAfterRemovingRoad
+ * takie same jak przy ostatnim wywołaniu @ref findNewRouteAfterRemovingRoad
  * dla danej drogi krajowej.
  * @param[in,out] route         - wskaźnik drogę krajową;
  * @param[in] city1             - wskaźnik na pierwsze miasto;
@@ -79,10 +79,10 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2);
  * Dodaje do drogi krajowej nowe odcinki dróg do podanego miasta w taki sposób,
  * aby nowy fragment drogi krajowej był najkrótszy. Jeśli jest więcej niż jeden
  * sposób takiego wydłużenia, to dla każdego wariantu wyznacza wśród dodawanych
- * odcinków dróg ten, który był najdawniej wybudo
+ * odcinków dróg ten, który był najdawniej wybudowany.
  * @param[in,out] route         - wskaźnik drogę krajową;
  * @param[in] city              - wskaźnik na miasto;
- * @param[in] listOfCities      - wskażnik na wszyskie miasta na danej mapie.
+ * @param[in] listOfCities      - wskaźnik na wszystkie miasta na danej mapie.
  * @return Wartość @p true, jeśli droga krajowa została wydłużona.
  * Wartość @p false, jeśli wystąpił błąd: nie można jednoznacznie
  * wyznaczyć nowego fragmentu drogi krajowej lub nie udało się zaalokować

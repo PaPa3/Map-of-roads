@@ -46,7 +46,7 @@ bool resizeStringBuilder(StringBuilder *ptr, uint32_t newMemorySize) {
 }
 
 /** @brief Tworzy strukturę.
- * @return Wskaźnik na utworzną strukturę lub NULL, jeśli nie udało się
+ * @return Wskaźnik na utworzoną strukturę lub NULL, jeśli nie udało się
  * zaalokować pamięci.
  */
 StringBuilder *newStringBuilder() {
@@ -66,7 +66,7 @@ StringBuilder *newStringBuilder() {
     return result;
 }
 
-/** @brief Usuwa strutkturę @ref StringBuilder.
+/** @brief Usuwa strukturę @ref StringBuilder.
  * Usuwa strukturę. Jeśli @p freeData wynosi @p true usuwa też przechowywane
  * słowo.
  * @param[in,out] string            - wskaźnik na usuwaną strukturę;
@@ -83,7 +83,7 @@ void deleteStringBuilder(StringBuilder *string, bool freeData) {
  * Dodaje dane słowo i znak ';' na koniec tworzonego napisu.
  * @param[in,out] string            - wskaźnik na tworzony napis;
  * @param[in] ptr                   - wskaźnik na dodawane słowo.
- * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
+ * @return Wartość @p true jeśli udało się dodać słowo lub @p false, jeśli
  * nie udało się zaalokować pamięci.
  */
 bool appendStringBuilderString(StringBuilder *string, const char *ptr) {

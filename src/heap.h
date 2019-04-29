@@ -54,11 +54,11 @@ Heap *newHeap();
 void deleteHeap(Heap *heap);
 
 /** @brief Dodaje element na stertę.
- * Dodoje miasto (@ref City) na stertę z kluczem (@ref HeapKey).
+ * Dodaje miasto (@ref City) na stertę z kluczem (@ref HeapKey).
  * @param[in,out] heap          - wskaźnik na stertę;
  * @param[in] distance          - odległość klucza;
  * @param[in] oldestRoad        - najdawniej wybudowany odcinek klucza;
- * @param[in] city              - wskażnik na dodawane miasto.
+ * @param[in] city              - wskaźnik na dodawane miasto.
  * @return Zwraca @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
  * to zwraca @p false.
  */
@@ -67,7 +67,7 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city);
 /** @brief Usuwa wierzch sterty.
  * Usuwa wierzch sterty. Funkcja nie usuwa struktury
  * wskazywanej przez @ref Heap.data.
- * @param[in,out] heap          - wskażnik na stertę.
+ * @param[in,out] heap          - wskaźnik na stertę.
  */
 void popHeap(Heap *heap);
 

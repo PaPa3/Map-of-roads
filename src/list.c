@@ -14,9 +14,9 @@
 #include <assert.h>
 
 /** @brief Tworzy strukturę.
- * Towrzy pusty węzeł, który będzie należał do listy wskazywanej przez @p father.
- * @param[in] father                - wskażnik na listę.
- * @return Wskaźnik na utowrzoną strukturę lub NULL, jeśli nie udało się
+ * Tworzy pusty węzeł, który będzie należał do listy wskazywanej przez @p father.
+ * @param[in] father                - wskaźnik na listę.
+ * @return Wskaźnik na utoworzoną strukturę lub NULL, jeśli nie udało się
  * zaalokować pamięci.
  */
 ListIterator *newListIterator(List *father) {
@@ -35,7 +35,7 @@ ListIterator *newListIterator(List *father) {
     return result;
 }
 
-/** @brief Towrzy strukturę.
+/** @brief Tworzy strukturę.
  * Tworzy pustą listę.
  * @return Wskaźnik na utworzoną listę lub NULL, jeśli nie udało się zaalokować
  * pamięci.
@@ -120,7 +120,7 @@ void deleteList(List *list, bool freeData) {
 /** @brief Wstawia węzeł do listy.
  * Wstawie węzeł @p newIterator przed węzeł @p iterator.
  * @param[in,out] iterator          - wskaźnik na węzeł przed, który wstawić;
- * @param[in,out] newIterator       - wskażnik na wstawiany węzeł.
+ * @param[in,out] newIterator       - wskaźnik na wstawiany węzeł.
  */
 void insertListIterator(ListIterator *iterator, ListIterator *newIterator) {
     assert(iterator);
@@ -163,7 +163,7 @@ ListIterator *insertList(ListIterator *iterator, void *newData) {
  * Przenosi listę i wstawia ją przed dany węzeł innej listy. W wyniku operacji
  * przenoszona lista staję się pustą listą.
  * @param[in,out] iterator          - wskaźnik na węzeł;
- * @param[in,out] sourceList        - wskażnik na listę do przeniesienia.
+ * @param[in,out] sourceList        - wskaźnik na listę do przeniesienia.
  */
 void spliceList(ListIterator *iterator, List *sourceList) {
     assert(iterator);

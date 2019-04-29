@@ -38,7 +38,7 @@ typedef struct City {
 /** @brief Tworzy strukturę.
  * Tworzy strukturę z miastem o nazwie @p name oraz liczy hasz
  * słowa @p name.
- * @param[in] name              - wskażnik na nazwę miasta.
+ * @param[in] name              - wskaźnik na nazwę miasta.
  * @return Wskaźnik na utworzoną strukturę lub NULL, gdy nie udało się
  * zaalokować pamięci.
  */
@@ -63,8 +63,8 @@ bool isStringValidCityName(const char *string);
 /** @brief Znajduje miasto na liście miast.
  * Znajduję strukturę @ref City o nazwie @p name na liście miast.
  * @param[in] listOfCities      - lista struktur @ref City;
- * @param[in] name              - wskażnik na słowo będące nazwą szukanego miasta.
- * @return Wskażnik na szukaną strukturę lub NULL jeśli szukane miasto
+ * @param[in] name              - wskaźnik na słowo będące nazwą szukanego miasta.
+ * @return Wskaźnik na szukaną strukturę lub NULL jeśli szukane miasto
  * nie znajduję się na liście.
  */
 City *findCityOnList(List *listOfCities, const char *name);
@@ -74,8 +74,8 @@ City *findCityOnList(List *listOfCities, const char *name);
  * na liście nie ma szukanego miasta to tworzy nowe o nazwie @p name oraz
  * dodaje je na listę
  * @param[in,out] listOfCities   - lista struktur @ref City;
- * @param[in] name               - wskażnik na słowo będące nazwą szukanego miasta.
- * @return Wskażnik na szukaną strukturę.
+ * @param[in] name               - wskaźnik na słowo będące nazwą szukanego miasta.
+ * @return Wskaźnik na szukaną strukturę.
  */
 City *findCityInsertIfNecessary(List *listOfCities, const char *name);
 
