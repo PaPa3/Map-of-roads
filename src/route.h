@@ -19,6 +19,7 @@ void deleteRouteStruct(Route *route);
 
 bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
                                    List *listOfCities);
+
 void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2);
 
 bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities);

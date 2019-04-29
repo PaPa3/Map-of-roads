@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+
 typedef struct Map {
     List *cities;
     List *routes;
@@ -174,7 +175,7 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2) {
         return false;
     }
 
-    if (!setRoadIsDeletedTo(city1, city2, true)) {//TODO fizyczne usuniec drogi lub cofniecie wartosci
+    if (!setRoadIsDeletedTo(city1, city2, true)) {
         return false;
     }
 
@@ -192,7 +193,7 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2) {
         iterator = iterator->next;
     }
 
-    removeRoadStruct(city1, city2);
+    removeRoadModule(city1, city2);
 
     return true;
 }
@@ -216,41 +217,4 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
     free(emptyString);
 
     return descriptionRoute(route);
-}
-
-#include <stdio.h>
-
-void debug(Map *map) {
-    ListIterator *iterator = map->cities->begin;
-
-    fflush(stdout);
-
-    while (iterator != map->cities->end) {
-        City *city = iterator->data;
-        printf("%s %d\n", city->name, city->hashName);
-
-        ListIterator *it = city->roads->begin;
-        while (it != city->roads->end) {
-            Road *road = it->data;
-            printf("  %s,%d,%d ", road->destination->name, road->length, road->buildYearOrLastRepairYear);
-            it = it->next;
-        }
-        printf("\n");
-        iterator = iterator->next;/*
-        City *city = iterator->data;
-        printf("%s %d ", city->name, city->hashName);
-        iterator = iterator->next;*/
-    }
-    printf("\n");
-
-    iterator = map->routes->begin;
-
-    while (iterator != map->routes->end) {
-        Route *route = iterator->data;
-        printf("%s\n", descriptionRoute(route));
-        iterator = iterator->next;
-    }
-    printf("\n");
-
-    fflush(stdout);
 }

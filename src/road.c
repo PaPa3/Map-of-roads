@@ -112,7 +112,7 @@ bool setRoadIsDeletedTo(City *city1, City *city2, bool newIsDeleted) {
     return true;
 }
 
-void removeRoadStruct(City *city1, City *city2) {
+void removeRoadModule(City *city1, City *city2) {
     assert(city1);
     assert(city2);
 

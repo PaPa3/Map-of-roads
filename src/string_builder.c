@@ -33,14 +33,13 @@ StringBuilder *newStringBuilder() {
         return NULL;
     }
 
-    /*result->data = NULL;
+    result->size = 0;
+    result->data = NULL;
+    result->reservedMemory = 0;
     if (!resizeStringBuilder(result, DEFAULT_STRING_BUILDER_MEMORY_SIZE)) {
         free(result);
         return NULL;
-    }*/result->data = malloc(sizeof(char) * DEFAULT_STRING_BUILDER_MEMORY_SIZE);
-    result->reservedMemory = DEFAULT_STRING_BUILDER_MEMORY_SIZE;
-
-    result->size = 0;
+    }
 
     return result;
 }

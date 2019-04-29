@@ -67,28 +67,25 @@ bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
         to2->distance = INFINITY;
     }
     if (!pushHeap(heap, 0, INFINITY, from)) {
-        deleteHeap(heap, false);
-        return false;
+        deleteHeap(heap);
     }
 
     City *ptr;
     while (heap->size != 0) {
-        //debugHeap(heap);
-
         ptr = heap->data[1];
 
         if (heap->keys[1]->distance != ptr->distance) {
-            popHeap(heap, false);
+            popHeap(heap);
             continue;
         }
 
         if (knownOldestRoad == 0 &&
                 heap->keys[1]->oldestRoad != ptr->oldestRoadOnRoute) {
-            popHeap(heap, false);
+            popHeap(heap);
             continue;
         }
 
-        popHeap(heap, false);
+        popHeap(heap);
 
         iterator = ptr->roads->begin;
         Road *road;
@@ -124,7 +121,7 @@ bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
                 road->destination->previousOnRoute = ptr;
 
                 if (!pushHeap(heap, distance, oldestRoute, road->destination)) {
-                    deleteHeap(heap, false);
+                    deleteHeap(heap);
                     return false;
                 }
             } else if (c == 0) {
@@ -135,7 +132,7 @@ bool dijkstraRoute(Route *route, City *from, City *to, City *to2,
         }
     }
 
-    deleteHeap(heap, false);
+    deleteHeap(heap);
 
     return true;
 }

@@ -5,7 +5,29 @@
 #include <string.h>
 #include <string.h>
 
+bool isStringValidCityName(const char *string) {
+    if (string == NULL || *string == 0) {
+        return false;
+    }
+
+    while (*string) {
+        if ((0 <= *string && *string <= 31) || *string == ';') {
+            return false;
+        }
+        string++;
+    }
+
+    return true;
+}
+
+/** @brief Liczy hasz słowa.
+ * Liczy hasz słowa @p string.
+ * @param string[in]            - wskażnik na słowo.
+ * @return Hasz słowa.
+ */
 uint32_t hashString(const char *string) {
+    assert(string);
+
     uint64_t result = 0;
 
     while (*string) {
@@ -17,6 +39,8 @@ uint32_t hashString(const char *string) {
 }
 
 City *newCity(const char *name) {
+    assert(isStringValidCityName(name));
+
     char *nameCopy = malloc(sizeof(char) * (strlen(name) + 1));
     if (nameCopy == NULL) {
         return NULL;
@@ -51,24 +75,9 @@ void deleteCity(City *city) {
     free(city);
 }
 
-
-bool isStringValidCityName(const char *string) {
-    if (string == NULL || *string == 0) {
-        return false;
-    }
-
-    while (*string) {
-        if ((0 <= *string && *string <= 31) || *string == ';') {
-            return false;
-        }
-        string++;
-    }
-
-    return true;
-}
-
 City *findCityOnList(List *listOfCities, const char *name) {
     assert(listOfCities);
+    assert(name);
 
     uint32_t hashName = hashString(name);
     ListIterator *iterator = listOfCities->begin;
@@ -92,6 +101,7 @@ City *findCityOnList(List *listOfCities, const char *name) {
 
 City *findCityInsertIfNecessary(List *listOfCities, const char *name) {
     assert(listOfCities);
+    assert(name);
 
     City *result = findCityOnList(listOfCities, name);
     if (result == NULL) {

@@ -4,23 +4,7 @@
 #include <assert.h>
 
 #define DEFAULT_HEAP_ARRAY_MEMORY_SIZE 8
-
-
-
-#include <stdio.h>
-#include <inttypes.h>
-void debugHeap(Heap *heap) {
-    assert(heap);
-
-    printf("size = %d, memory = %u\n", heap->size, heap->reservedMemory);
-
-    for (int i = 1; i <= heap->size; i++) {
-        printf("%"PRIu64",%"PRIu64" ", heap->keys[i]->distance, heap->keys[i]->oldestRoad);
-    }
-
-    printf("\n");
-    fflush(stdout);
-}
+///< domyślny rozmiar zaalokowanej tablicy w (@ref HeapKey)
 
 HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
     HeapKey *result = malloc(sizeof(HeapKey));
@@ -34,14 +18,11 @@ HeapKey *newHeapKey(int64_t distance, int64_t oldestRoad) {
     return result;
 }
 
-void deleteHeap(Heap *heap, bool freeData) {
+void deleteHeap(Heap *heap) {
     assert(heap);
 
     for (uint32_t i = 1; i <= heap->size; i++) {
         free(heap->keys[i]);
-        if (freeData && heap->data[i] != NULL) {
-            free(heap->data[i]);
-        }
     }
 
     free(heap->data);
@@ -49,14 +30,33 @@ void deleteHeap(Heap *heap, bool freeData) {
     free(heap);
 }
 
-bool isHeapKeySmallerThan(HeapKey *key, HeapKey *other) {
+/** @brief Implementuje relację ważności (@ref HeapKey).
+ * Sprawdza czy @p key jest ważniejszy niż @p other.
+ * @param[in] key               - wskażnik na @ref HeapKey do porównania
+ * @param[in] other             - wskażnik na @ref HeapKey do porównania
+ * @return @p true jeśli @p key jest ważniejszy niż @p other. @p false
+ * w przeciwnym przypadku.
+ */
+bool isHeapKeyMoreImportantThan(HeapKey *key, HeapKey *other) {
+    assert(key);
+    assert(other);
+
     if (key->distance == other->distance) {
-        return key->oldestRoad < other->oldestRoad;
+        return key->oldestRoad > other->oldestRoad;
     }
 
     return key->distance < other->distance;
 }
 
+/** @brief Zwiększa zaalokowaną tablicę danej sterty.
+ * Powiększa zaalokowaną tablicę (@ref keys oraz @ref data) do rozmiaru
+ * @p newMemory. Nic nie robi jeśli wartość @p newMemory jest mniejsza niż
+ * dotychczas zaalokowana pamięć.
+ * @param[in, out] heap         - wskaźnik na stertę;
+ * @param[in] newMemory         - docelowa wielkość zaalokowanej tablicy.
+ * @return Wartość @p true. Jeśli nie udało się zaalokować potrzebnej pamięci
+ * to zwraca @p false.
+ */
 bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
     assert(heap);
 
@@ -64,8 +64,7 @@ bool reserveMemoryHeap(Heap *heap, uint32_t newMemory) {
         return true;
     }
 
-    void **ptr = realloc(heap->data, sizeof(void *) * newMemory);
-    //void **ptr = malloc(sizeof(void *) * 8);
+    City **ptr = realloc(heap->data, sizeof(City *) * newMemory);
     if (ptr == NULL) {
         return false;
     }
@@ -101,21 +100,26 @@ Heap *newHeap() {
     return result;
 }
 
+/** @brief Zamienia miejscami dane w tablicy danej sterty.
+ * @param[in,out] heap      - wskaźnik na stertę;
+ * @param[in] position1     - pozycja w tablicy do zmiany;
+ * @param[in] position2     - pozycja w tablicy do zmiany.
+ */
 void swapHeapData(Heap *heap, uint32_t position1, uint32_t position2) {
     assert(heap);
-    assert(0 < position1 <= heap->size);
-    assert(0 < position2 <= heap->size);
+    assert(0 < position1 && position1 <= heap->size);
+    assert(0 < position2 && position2 <= heap->size);
 
     HeapKey *key = heap->keys[position1];
     heap->keys[position1] = heap->keys[position2];
     heap->keys[position2] = key;
 
-    void *pointer = heap->data[position1];
+    City *city = heap->data[position1];
     heap->data[position1] = heap->data[position2];
-    heap->data[position2] = pointer;
+    heap->data[position2] = city;
 }
 
-bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, void *data) {
+bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
     assert(heap);
 
     HeapKey *key = newHeapKey(distance, oldestRoad);
@@ -132,12 +136,11 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, void *data) {
     }
 
     heap->size++;
-    heap->data[position] = data;
+    heap->data[position] = city;
     heap->keys[position] = key;
 
     while (position > 1 &&
-           isHeapKeySmallerThan(heap->keys[position], heap->keys[position / 2])) {
-           //heap->keys[position] < heap->keys[position / 2]) {
+           isHeapKeyMoreImportantThan(heap->keys[position], heap->keys[position / 2])) {
         swapHeapData(heap, position, position / 2);
 
         position /= 2;
@@ -146,47 +149,38 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, void *data) {
     return true;
 }
 
-void *popHeap(Heap *heap, bool freeData) {
+void popHeap(Heap *heap) {
     assert(heap);
     assert(heap->size);
 
-    void *result = heap->data[1];
-
     swapHeapData(heap, 1, heap->size);
     free(heap->keys[heap->size]);
-    if (freeData && heap->data[heap->size] != NULL) {
-        free(heap->data[heap->size]);
-    }
 
     if (--heap->size == 0) {
-        return result;
+        return;
     }
 
     uint32_t position = 1;
     while (true) {
-        uint32_t childWithSmallestKey = 0;
+        uint32_t childWithMostImportantKey = 0;
 
         if (position * 2 <= heap->size) {
-            childWithSmallestKey = position * 2;
+            childWithMostImportantKey = position * 2;
         }
 
         if (position * 2 + 1 <= heap->size &&
-                isHeapKeySmallerThan(heap->keys[position * 2 + 1],
-                                     heap->keys[childWithSmallestKey]) ) {
-                //heap->keys[position * 2 + 1] < heap->keys[childWithSmallestKey]) {
-            childWithSmallestKey = position * 2 + 1;
+                isHeapKeyMoreImportantThan(heap->keys[position * 2 + 1],
+                                     heap->keys[childWithMostImportantKey]) ) {
+            childWithMostImportantKey = position * 2 + 1;
         }
 
-        if (childWithSmallestKey != 0 &&
-                isHeapKeySmallerThan(heap->keys[childWithSmallestKey],
+        if (childWithMostImportantKey != 0 &&
+                isHeapKeyMoreImportantThan(heap->keys[childWithMostImportantKey],
                                      heap->keys[position])) {
-                //heap->keys[position] > heap->keys[childWithSmallestKey]) {
-            swapHeapData(heap, position, childWithSmallestKey);
-            position = childWithSmallestKey;
+            swapHeapData(heap, position, childWithMostImportantKey);
+            position = childWithMostImportantKey;
         } else {
             break;
         }
     }
-
-    return result;
 }
