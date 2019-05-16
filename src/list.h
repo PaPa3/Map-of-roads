@@ -9,6 +9,7 @@
 #define LIST_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct List List;
 
@@ -96,5 +97,12 @@ void reverseList(List *list);
  * @return Wskaźnik na szukane dane.
  */
 void *backList(List *list);
+
+/** @brief Rzomiar listy.
+ * Zwraca rozmiar (ilość węzłów przechowywujących dane) listy.
+ * @param list                      - wskaźnik na listę.
+ * @return Rozmiar listy.
+ */
+uint32_t sizeList(List *list);
 
 #endif // LIST_H

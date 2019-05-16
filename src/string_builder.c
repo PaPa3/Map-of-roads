@@ -13,7 +13,7 @@
 #include <inttypes.h>
 #include <string.h>
 
-#define DEFAULT_STRING_BUILDER_MEMORY_SIZE 8
+#define DEFAULT_STRING_BUILDER_MEMORY_SIZE 2
 ///< domyślny rozmiar zaalokowanego miejsca na napis w (@ref StringBuilder)
 #define INTEGER_LENGTH 22
 ///< pewne górne ograniczenie na długość liczby całkowitej jako słowa
@@ -102,7 +102,7 @@ bool appendStringBuilderString(StringBuilder *string, const char *ptr) {
 }
 
 /** @brief Dodaje liczbę do struktury.
- * Dodaje dane liczbę zrzutowaną na słowo i znak ';'
+ * Dodaje daną liczbę zrzutowaną na słowo i znak ';'
  * na koniec tworzonego napisu.
  * @param[in,out] string            - wskaźnik na tworzony napis;
  * @param[in] integer               - dodawana liczba.
@@ -120,6 +120,29 @@ bool appendStringBuilderInteger(StringBuilder *string, int64_t integer) {
 
     int x = sprintf(&string->data[string->size], "%" PRId64 ";", integer);
     string->size += x;
+
+    return true;
+}
+
+/** @brief Dodaje znak do struktury.
+ * Dodaje dany znak na koniec tworzonego napisu.
+ * @param[in,out] string            - wskaźnik na tworzony napis;
+ * @param[in] character             - dodawany znak.
+ * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
+ * nie udało się zaalokować pamięci.
+ */
+bool appendStringBuilderChar(StringBuilder *string, char character) {
+    assert(string);
+
+    if (string->size + 1 >= string->reservedMemory) {
+        if (!resizeStringBuilder(string, string->reservedMemory * 2)) {
+            return false;
+        }
+    }
+
+    string->data[string->size] = character;
+    string->size++;
+    string->data[string->size] = 0;
 
     return true;
 }

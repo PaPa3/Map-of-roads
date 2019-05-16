@@ -2,19 +2,25 @@
  * Interfejs klasy przechowującej mapę dróg krajowych
  *
  * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>
+ * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
  * @copyright Uniwersytet Warszawski
- * @date 20.03.2019
+ * @date 15.05.2019
  */
 
 #ifndef __MAP_H__
 #define __MAP_H__
+
+#include "list.h"
 
 #include <stdbool.h>
 
 /**
  * Struktura przechowująca mapę dróg krajowych.
  */
-typedef struct Map Map;
+typedef struct Map {
+    List *cities;        ///< Lista miast na mapie
+    List *routes;        ///< Lista dróg krajowych na mapie
+} Map;
 
 /** @brief Tworzy nową strukturę.
  * Tworzy nową, pustą strukturę niezawierającą żadnych miast, odcinków dróg ani
@@ -137,5 +143,37 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2);
  * @return Wskaźnik na napis lub NULL, gdy nie udało się zaalokować pamięci.
  */
 char const* getRouteDescription(Map *map, unsigned routeId);
+
+/** @brief Dodaje do mapy odcinek drogi między dwoma różnymi miastami.
+ * Jeśli któreś z podanych miast nie istnieje, to dodaje go do mapy, a następnie
+ * dodaje do mapy odcinek drogi między tymi miastami.
+ * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] length     – długość w km odcinka drogi;
+ * @param[in] builtYear  – rok budowy odcinka drogi.
+ * @return Wartość @p true, jeśli odcinek drogi został dodany.
+ * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
+ * wartość, obie podane nazwy miast są identyczne, odcinek drogi między tymi
+ * miastami już istnieje lub nie udało się zaalokować pamięci.
+ */
+
+/** @brief Uaktualnia odcinek drogowy w mapie.
+ * Jeśli dana droga nie istnieje, to dodaję ją do mapy funkcją @ref addRoad.
+ * Jeśli dana droga istnieje to wywołuję funkcję @ref repairRoad.
+ * @brief updateRoad
+ * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] length     – długość w km odcinka drogi;
+ * @param[in] builtYear  – rok budowy odcinka drogi.
+ * @return Wartość @p true jeśli funkjca @ref addRoad / @ref repairRoad
+ * zakończyła się sukcesem. Wartość @p false jeśli wystąpił błąd:
+ * dana funkcja nie zakończyła się sukcesem, któryś z parametrów ma niepoprawną
+ * wartość, obie podane nazwy miast są identyczne, odcinek drogi między tymi
+ * miastami już istnieje i ma inną długość lub nie udało się zaalokować pamięci.
+ */
+bool updateRoad(Map *map, const char *cityName1, const char *cityName2,
+                unsigned length, int builtYear);
 
 #endif /* __MAP_H__ */

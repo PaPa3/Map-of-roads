@@ -4,7 +4,7 @@
  * @author Łukasz Kamiński <kamis@mimuw.edu.pl>, Marcin Peczarski <marpe@mimuw.edu.pl>
  * @author Paweł Pawlik <pp406289@students.mimuw.edu.pl>
  * @copyright Uniwersytet Warszawski
- * @date 29.04.2019
+ * @date 15.04.2019
  */
 
 #include "map.h"
@@ -17,14 +17,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-/**
- * Struktura przechowująca mapę dróg krajowych.
- */
-typedef struct Map {
-    List *cities;        ///< Lista miast na mapie
-    List *routes;        ///< Lista dróg krajowych na mapie
-} Map;
 
 /** @brief Tworzy nową strukturę.
  * Tworzy nową, pustą strukturę niezawierającą żadnych miast, odcinków dróg ani
@@ -289,6 +281,8 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2) {
         return false;
     }
 
+    /* Sprawdzamy czy droga istnieje. Jeśli istnieje to ustawiamy,
+     * że dana droga jest w trakcie usuwania. */
     if (!setRoadIsDeletedTo(city1, city2, true)) {
         return false;
     }
@@ -297,6 +291,8 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2) {
     while (iterator != map->routes->end) {
         if (!findNewRouteAfterRemovingRoad(iterator->data, city1, city2,
                                            map->cities)) {
+            /* Okazuje się, że nie można usunąć danej drogi, więc cofamy
+             * wszystkie zmiany. */
             while (iterator != map->routes->begin) {
                 iterator = iterator->previous;
                 undoFindNewRouteAfterRemovingRoad(iterator->data, city1, city2);
@@ -346,4 +342,44 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
     free(emptyString);
 
     return descriptionRouteModule(route);
+}
+
+/** @brief Uaktualnia odcinek drogowy w mapie.
+ * Jeśli dana droga nie istnieje, to dodaję ją do mapy funkcją @ref addRoad.
+ * Jeśli dana droga istnieje to wywołuję funkcję @ref repairRoad.
+ * @brief updateRoad
+ * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
+ * @param[in] length     – długość w km odcinka drogi;
+ * @param[in] builtYear  – rok budowy odcinka drogi.
+ * @return Wartość @p true jeśli funkjca @ref addRoad / @ref repairRoad
+ * zakończyła się sukcesem. Wartość @p false jeśli wystąpił błąd:
+ * dana funkcja nie zakończyła się sukcesem, któryś z parametrów ma niepoprawną
+ * wartość, obie podane nazwy miast są identyczne, odcinek drogi między tymi
+ * miastami już istnieje i ma inną długość lub nie udało się zaalokować pamięci.
+ */
+bool updateRoad(Map *map, const char *cityName1, const char *cityName2,
+                unsigned length, int builtYear) {
+    if (!isValidInput(map, cityName1, cityName2) || length == 0 || builtYear == 0) {
+        return false;
+    }
+
+    City *city1 = findCityInsertIfNecessary(map->cities, cityName1);
+    City *city2 = findCityInsertIfNecessary(map->cities, cityName2);
+    if (city1 == NULL || city2 == NULL) {
+        return false;
+    }
+
+    ListIterator *iterator = findRoadModule(city1, city2);
+    if (iterator == NULL) {
+        return addRoadModule(city1, city2, length, builtYear);
+    } else {
+        Road *road = iterator->data;
+        if (road->length != length) {
+            return false;
+        } else {
+            return repairRoadModule(city1, city2, builtYear);
+        }
+    }
 }

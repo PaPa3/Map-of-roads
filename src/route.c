@@ -106,6 +106,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         }
     }
 
+    /* Ustwiamy odległość miasta startowego. */
     from->distance = 0;
     from->oldestRoadOnRoute = INFINITY;
     from->isRouteUnequivocal = true;
@@ -121,15 +122,20 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
         to2->distance = INFINITY;
     }
 
+    /* Algorytm Dijkstry. */
     City *ptr;
     while (heap->size != 0) {
         ptr = heap->data[1];
 
+        /* Sprawdzamy czy wierzchołek sterty posiada najoptymalniejszą
+         * drogę do danego miasta. Jeśli tak nie jest oznacza to, że
+         * dane miasto zostało już "obsłużone" przez algorytm. */
         if (heap->keys[1]->distance != ptr->distance) {
             popHeap(heap);
             continue;
         }
 
+        /* Robimy to samo co wyżej. */
         if (knownOldestRoad == 0 &&
                 heap->keys[1]->oldestRoad != ptr->oldestRoadOnRoute) {
             popHeap(heap);
@@ -138,6 +144,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
 
         popHeap(heap);
 
+        /* Próbujemy "poprawić" sąsiadów miasta. */
         iterator = ptr->roads->begin;
         Road *road;
         while (iterator != ptr->roads->end) {
@@ -148,6 +155,8 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
                 continue;
             }
 
+            /* Jeśli znamy jaka jest najstarsza droga w optymalnej szukanej
+             * drodze krajowej, to pomijamy starsze drogi. */
             if (knownOldestRoad != 0 &&
                     knownOldestRoad > road->buildYearOrLastRepairYear) {
                 iterator = iterator->next;
@@ -157,15 +166,19 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
             int64_t distance = ptr->distance + road->length;
             int64_t oldestRoute = minInt64_t(ptr->oldestRoadOnRoute,
                                              road->buildYearOrLastRepairYear);
-            int64_t c = compareRoutes(distance, oldestRoute,
-                                  road->destination->distance,
-                                  road->destination->oldestRoadOnRoute);
+            int64_t compare = compareRoutes(distance, oldestRoute,
+                                            road->destination->distance,
+                                            road->destination->oldestRoadOnRoute);
 
+            /* Jeśli znamy jaka jest najstarsza droga w optymalnej szukanej
+             * drodze krajowej, to nie musimy porównywać dat budowy odcinków. */
             if (knownOldestRoad != 0) {
-                c = distance - road->destination->distance;
+                compare = distance - road->destination->distance;
             }
 
-            if (c < 0) {
+            /* Sprawdzamy czy możemy poprawić wynik dla danego "sąsiad" lub czy
+             * możemy go "wyrównać" (stanie się niejednoznaczny). */
+            if (compare < 0) {
                 road->destination->distance = distance;
                 road->destination->oldestRoadOnRoute = oldestRoute;
                 road->destination->isRouteUnequivocal = ptr->isRouteUnequivocal;
@@ -175,7 +188,7 @@ bool dijkstraRouteModule(Route *route, City *from, City *to, City *to2,
                     deleteHeap(heap);
                     return false;
                 }
-            } else if (c == 0) {
+            } else if (compare == 0) {
                 road->destination->isRouteUnequivocal = false;
             }
 
@@ -212,6 +225,7 @@ List *findRouteModule(Route *route, City *from, City *to, City *to2,
     assert(to);
     assert(listOfCities);
 
+    /* Znajdujemy optymalny najstarszy odcinek szukanej drogi krajowej. */
     if (!dijkstraRouteModule(route, from, to, to2, listOfCities, 0)) {
         return NULL;
     }
@@ -226,15 +240,21 @@ List *findRouteModule(Route *route, City *from, City *to, City *to2,
         }
     }
 
+    /* Sprawdzamy czy istnieje jakakolwiek szukana droga krajowa. */
     if (knownOldestRoad == INFINITY) {
         return NULL;
     }
 
+    /* Uruchamiamy raz jeszcze algorytm dijkstry znając już optymalny najstarszy
+     * odcinek szukanej drogi krajowej by dowiedzieć się czy szukana droga
+     * krajowa jest wyznaczona jednoznacznie. */
     if (!dijkstraRouteModule(route, from, to, to2, listOfCities,
                              knownOldestRoad)) {
         return NULL;
     }
 
+    /* Sprawdzamy do którego miasta prowadzi szukana drogą krajowa oraz
+     * czy jest wyznaczona jednoznacznie. */
     if (to2 != NULL) {
         int64_t c = compareRoutes(to->distance, to->oldestRoadOnRoute,
                                   to2->distance, to2->oldestRoadOnRoute);
@@ -245,6 +265,8 @@ List *findRouteModule(Route *route, City *from, City *to, City *to2,
         }
     }
 
+    /* Sprawdzamy czy istnieje jakakolwiek szukana droga krajowa i czy
+     * jest wyznaczona jednoznacznie. */
     if (to->distance == INFINITY || !to->isRouteUnequivocal) {
         return NULL;
     }
@@ -296,10 +318,26 @@ Route *newRouteModule(unsigned routeId, City *city1, City *city2,
 
     result->routeId = routeId;
     result->cities = NULL;
-    result->cities = findRouteModule(result, city1, city2, NULL, listOfCities);
-    if (result->cities == NULL) {
-        free(result);
-        return NULL;
+
+    if (city1 == city2) {
+        result->cities = newList();
+        if (result->cities == NULL) {
+            free(result);
+            return NULL;
+        }
+
+        if (insertList(result->cities->end, city1) == NULL) {
+            deleteList(result->cities, false);
+            free(result);
+            return NULL;
+        }
+    } else {
+        result->cities = findRouteModule(result, city1, city2, NULL,
+                                         listOfCities);
+        if (result->cities == NULL) {
+            free(result);
+            return NULL;
+        }
     }
 
     return result;
@@ -329,21 +367,27 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
 
     route->wasChanged = false;
 
+    /* Szukamy miasta city1 lub city2 na danej drodze krajowej. */
     ListIterator *iterator = route->cities->begin;
     while (iterator != route->cities->end &&
            iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
     }
 
+    /* Sprawdzamy czy usunięty odcinek drogowy jakkolwiek wpływa na
+     * naszą drogę krajową. */
     if (iterator == route->cities->end ||
             iterator->next == route->cities->end) {
         return true;
     }
 
+    /* Robimy to samo co wyżej. */
     if (iterator->next->data != city1 && iterator->next->data != city2) {
         return true;
     }
 
+    /* Usunięty odcinek drogowy wpływa na naszą drogę krajową. Znajdujemy
+     * objazd. */
     List *list;
     if (iterator->data == city1) {
         list = findRouteModule(route, city1, city2, NULL, listOfCities);
@@ -355,6 +399,7 @@ bool findNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2,
         return false;
     }
 
+    /* Uaktualniamy naszą drogę krajową o znaleziony objazd. */
     eraseList(list->begin, false);
     eraseList(list->end->previous, false);
     spliceList(iterator->next, list);
@@ -382,12 +427,15 @@ void undoFindNewRouteAfterRemovingRoad(Route *route, City *city1, City *city2) {
         return;
     }
 
+    /* Szukamy miasta city1 lub city2 na danej drodze krajowej. */
     ListIterator *iterator = route->cities->begin;
     while (iterator != route->cities->end &&
            iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
     }
 
+    /* Usuwamy wszystkie miasto z naszej drogi krajowej pomiędzy miastem
+     * city1, a city2. */
     iterator = iterator->next;
     while (iterator->data != city1 && iterator->data != city2) {
         iterator = iterator->next;
@@ -503,7 +551,7 @@ char *descriptionRouteModule(Route *route) {
         }
     }
 
-    /* Usuwamy niepotrzebny średnik z napisu. */
+    /* Usuwamy niepotrzebny średnik z końca napisu. */
     result->data[result->size - 1] = 0;
     char *ptr = result->data;
     deleteStringBuilder(result, false);

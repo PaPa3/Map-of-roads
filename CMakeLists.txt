@@ -35,7 +35,13 @@ set(SOURCE_FILES
     src/route.c
     src/route.h
     src/string_builder.c
-    src/string_builder.h)
+    src/string_builder.h
+    src/reader.c
+    src/reader.h
+    src/text_interface.c
+    src/text_interface.h
+    src/string_to_integer.c
+    src/string_to_integer.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})

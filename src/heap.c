@@ -173,8 +173,10 @@ bool pushHeap(Heap *heap, int64_t distance, int64_t oldestRoad, City *city) {
     heap->data[position] = city;
     heap->keys[position] = key;
 
+    /* Naprawiamy warunek kopca. */
     while (position > 1 &&
-           isHeapKeyMoreImportantThan(heap->keys[position], heap->keys[position / 2])) {
+           isHeapKeyMoreImportantThan(heap->keys[position],
+                                      heap->keys[position / 2])) {
         swapHeapData(heap, position, position / 2);
 
         position /= 2;
@@ -199,6 +201,7 @@ void popHeap(Heap *heap) {
         return;
     }
 
+    /* Naprawiamy warunek kopca. */
     uint32_t position = 1;
     while (true) {
         uint32_t childWithMostImportantKey = 0;

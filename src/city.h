@@ -15,7 +15,7 @@
 
 /**
  * Struktura przechowująca miasto w mapie dróg krajowych. Dodatkowo
- * trzyma zmienne używane przez algorytm dijskry do liczenia najkrótszej
+ * trzyma zmienne używane przez algorytm dijkstry do liczenia najkrótszej
  * drogi od pewnego ustalonego miasta.
  */
 typedef struct City {
@@ -24,7 +24,7 @@ typedef struct City {
     List *roads;                    ///< list dróg wychodzących z miasta
 
     /** @name Zmienne użwane przez algorytm dijkstry.
-     * Zmienne używane przez algorytm dijskry do liczenia najkrótszej
+     * Zmienne używane przez algorytm dijkstry do liczenia najkrótszej
      * drogi od pewnego ustalonego miasta.
      */
     ///@{

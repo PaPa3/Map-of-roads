@@ -228,3 +228,21 @@ void *backList(List *list) {
 
     return list->end->previous->data;
 }
+
+/** @brief Rzomiar listy.
+ * Zwraca rozmiar (ilość węzłów przechowywujących dane) listy.
+ * @param list                      - wskaźnik na listę.
+ * @return Rozmiar listy.
+ */
+uint32_t sizeList(List *list) {
+    assert(list);
+
+    uint32_t result = 0;
+    ListIterator *iterator = list->begin;
+    while (iterator != list->end) {
+        result++;
+        iterator = iterator->next;
+    }
+
+    return result;
+}

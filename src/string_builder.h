@@ -44,7 +44,7 @@ void deleteStringBuilder(StringBuilder *string, bool freeData);
 bool appendStringBuilderString(StringBuilder *string, const char *ptr);
 
 /** @brief Dodaje liczbę do struktury.
- * Dodaje dane liczbę zrzutowaną na słowo i znak ';'
+ * Dodaje daną liczbę zrzutowaną na słowo i znak ';'
  * na koniec tworzonego napisu.
  * @param[in,out] string            - wskaźnik na tworzony napis;
  * @param[in] integer               - dodawana liczba.
@@ -52,5 +52,14 @@ bool appendStringBuilderString(StringBuilder *string, const char *ptr);
  * nie udało się zaalokować pamięci.
  */
 bool appendStringBuilderInteger(StringBuilder *string, int64_t integer);
+
+/** @brief Dodaje znak do struktury.
+ * Dodaje dany znak na koniec tworzonego napisu.
+ * @param[in,out] string            - wskaźnik na tworzony napis;
+ * @param[in] character             - dodawany znak.
+ * @return Wartość @p true jeśli udało się dodać słow lub @p false, jeśli
+ * nie udało się zaalokować pamięci.
+ */
+bool appendStringBuilderChar(StringBuilder *string, char character);
 
 #endif // STRING_BUILDER_H

@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <string.h>
 
 /** @brief Sprawdza czy słowo jest poprawną nazwą miasta.
  * Sprawdza czy @p string jest poprawną nazwą miasta. Poprawna nazwa
