@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #define DEFAULT_HEAP_ARRAY_MEMORY_SIZE 8
-///< domyślny rozmiar zaalokowanej tablicy w (@ref HeapKey)
+///< domyślny rozmiar zaalokowanej tablicy w @ref Heap
 
 /** @brief Tworzy strukturę.
  * Tworzy strukturę i ustawia pola struktury na podane.

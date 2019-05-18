@@ -31,6 +31,7 @@
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
  * @return Wartość @p 0 jeśli operacja zakończyła się sukcesem,

@@ -56,9 +56,12 @@ int nextStringReader(char **result) {
     return EOF;
 }
 
+/** @brief Ignoruje cały wiersz z wejścia.
+ * Ignoruję wszystkie znaki do napotkania @p EOF lub znaku '\n'.
+ */
 void ignoreLineReader()  {
     char c;
-    while (scanf("%c", &c) != EOF && c != '\n');
+    while (scanf("%c", &c) == 1 && c != '\n');
 }
 
 /** @brief Wczytuje wiersz ze standardowego wejścia.
@@ -86,7 +89,11 @@ int nextLineReader(List **result) {
         char *ptr = NULL;
         x = nextStringReader(&ptr);
 
-        if (x == 1 || x == 2 || insertList((*result)->end, ptr) == NULL) { // TODO do poprawy ten insert (łapanie z niego błedów)
+        if (x != 1 && x != 2 && insertList((*result)->end, ptr) == NULL) {
+            x = 2;
+        }
+
+        if (x == 1 || x == 2) {
             deleteList(*result, true);
             *result = NULL;
 

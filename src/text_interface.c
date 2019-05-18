@@ -28,6 +28,7 @@
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * Funkcja usuwa strukturę @p line.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
@@ -73,6 +74,7 @@ void addRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * Funkcja usuwa strukturę @p line.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
@@ -116,6 +118,7 @@ void repairRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * Funkcja usuwa strukturę @p line.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
@@ -157,6 +160,7 @@ void getRouteDescriptionTextInterface(Map *map, uint32_t lineNumber, List *line)
  * @p line zawiera wczytaną linię zawierjącą co najmniej jedno słowo.
  * Sprawdza poprawność wszystkich argumentów (w tym czy można dodać odpowiednie
  * odcinki na mapę dróg).
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * @param[in] map           - wskźnik na mapę;
  * @param[in] line          - wskażnik na wiersz zawierający polecenie.
  * @return Wartość @p jeśli polecenie jest poprawne lub @p false w przeciwnym
@@ -247,6 +251,7 @@ bool checkIfRouteCanBeAdded(Map *map, List *line) {
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * Funkcja usuwa strukturę @p line.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
@@ -295,6 +300,7 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
         iterator = iterator->next;
         char *cityName = iterator->data;
 
+        /* Dodajemy odpowiedni odcinek drogowy jeśli trzeba. */
         if (!updateRoad(map, previousCityName, cityName, length, builtYear)) {
             fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
             deleteList(line, true);
@@ -302,6 +308,7 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
             return;
         }
 
+        /* Dodajemy miasto do drogi krajowej. */
         if (insertList(route->cities->end,
                        findCityOnList(map->cities, cityName)) == NULL) {
             fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
@@ -315,6 +322,7 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
 
     deleteList(line, true);
 
+    /* Dodajemy utworzoną drogę krajową do mapy dróg. */
     if (insertList(map->routes->end, route) == NULL) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
         deleteRouteModule(route);
@@ -323,7 +331,6 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
 
 /** @brief Obsługuje pojedynczy wiersz wejścia.
  * Czyta pojedynczy wiersz i wywołuję odpowiednie operacje na danej mapie.
- * Wiersz to pojedyncza linia wejścia zakończona znakiem '\n'.
  * Jeśli wiersz jest postaci:
  *  - numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy lub
  *  - ostatniego remontu;nazwa miasta;długość odcinka drogi;rok budowy lub
@@ -342,6 +349,7 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
  * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
  * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja akceptuje liczby z wiodącymi zerami.
  * @param[in,out] map       - wskźnik na mapę;
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
  * @return Wartość @p 0 jeśli operacja zakończyła się sukcesem,
@@ -368,7 +376,9 @@ int nextCommandTextInterface(Map *map, uint32_t lineNumber) {
             if (!(commandName[0] == 0 && lineSize == 1)) {
                 fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
             }
+        }
 
+        if (line != NULL) {
             deleteList(line, true);
         }
 
