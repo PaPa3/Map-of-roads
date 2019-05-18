@@ -40,8 +40,8 @@ set(SOURCE_FILES
     src/reader.h
     src/text_interface.c
     src/text_interface.h
-    src/string_to_integer.c
-    src/string_to_integer.h)
+    src/string_utilities.c
+    src/string_utilities.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})

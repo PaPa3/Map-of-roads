@@ -8,9 +8,10 @@
 #include "text_interface.h"
 #include "reader.h"
 #include "map.h"
-#include "string_to_integer.h"
+#include "string_utilities.h"
 #include "city.h"
 #include "route.h"
+#include "road.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +19,20 @@
 #include <string.h>
 #include <inttypes.h>
 
+/** @brief Obsługuję polecenie "addRoad" z wejścia.
+ * Obsługuję polecenie typu "addRoad city1 city2 length builtYear".
+ * @p line zawiera wczytaną linię, gdzie pierwsze słowo jest równe
+ * "addRoad". Sprawdza poprawność pozostałych argumentów. Jeśli są poprawne
+ * to wywołuje odpowiednią funkcję @ref addRoad.
+ * Jeśli polecenie jest niepoprawne składniowo lub jego wykonanie
+ * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
+ * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
+ * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja usuwa strukturę @p line.
+ * @param[in,out] map       - wskźnik na mapę;
+ * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
+ * @param[in,out] line      - wskażnik na wiersz zawierający polecenie.
+ */
 void addRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     assert(map);
     assert(line);
@@ -40,6 +55,8 @@ void addRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     iterator = iterator->next;
     int builtYear = stringToInt(iterator->data);
 
+    /* Jeśli którykolwiek z argumentów był niepoprawny składniowo to teraz
+     * to wykryjemy. */
     if (!addRoad(map, cityName1, cityName2, length, builtYear)) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
     }
@@ -47,6 +64,20 @@ void addRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     deleteList(line, true);
 }
 
+/** @brief Obsługuję polecenie "repairRoad" z wejścia.
+ * Obsługuję polecenie typu "repairRoad city1 city2 repairYear".
+ * @p line zawiera wczytaną linię, gdzie pierwsze słowo jest równe
+ * "repairRoad". Sprawdza poprawność pozostałych argumentów. Jeśli są poprawne
+ * to wywołuje odpowiednią funkcję @ref repairRoad.
+ * Jeśli polecenie jest niepoprawne składniowo lub jego wykonanie
+ * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
+ * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
+ * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja usuwa strukturę @p line.
+ * @param[in,out] map       - wskźnik na mapę;
+ * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
+ * @param[in,out] line      - wskażnik na wiersz zawierający polecenie.
+ */
 void repairRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     assert(map);
     assert(line);
@@ -66,6 +97,8 @@ void repairRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     iterator = iterator->next;
     int repairYear = stringToInt(iterator->data);
 
+    /* Jeśli którykolwiek z argumentów był niepoprawny składniowo to teraz
+     * to wykryjemy. */
     if (!repairRoad(map, cityName1, cityName2, repairYear)) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
     }
@@ -73,6 +106,21 @@ void repairRoadTextInterface(Map *map, uint32_t lineNumber, List *line) {
     deleteList(line, true);
 }
 
+/** @brief Obsługuję polecenie "getRouteDescription" z wejścia.
+ * Obsługuję polecenie typu "getRouteDescription routeId".
+ * @p line zawiera wczytaną linię, gdzie pierwsze słowo jest równe
+ * "getRouteDescription". Sprawdza poprawność pozostałych argumentów.
+ * Jeśli są poprawne to wywołuje odpowiednią funkcję @ref getRouteDescription
+ * oraz wypisuje jej wynik na standardowe wyjście.
+ * Jeśli polecenie jest niepoprawne składniowo lub jego wykonanie
+ * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
+ * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
+ * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja usuwa strukturę @p line.
+ * @param[in,out] map       - wskźnik na mapę;
+ * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
+ * @param[in,out] line      - wskażnik na wiersz zawierający polecenie.
+ */
 void getRouteDescriptionTextInterface(Map *map, uint32_t lineNumber, List *line) {
     assert(map);
     assert(line);
@@ -85,6 +133,11 @@ void getRouteDescriptionTextInterface(Map *map, uint32_t lineNumber, List *line)
 
     ListIterator *iterator = line->begin->next;
     unsigned routeId = stringToUnsigned(iterator->data);
+    if (errno == EILSEQ) {
+        fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
+        deleteList(line, true);
+        return;
+    }
 
     char *result = (char *) getRouteDescription(map, routeId);
 
@@ -98,8 +151,18 @@ void getRouteDescriptionTextInterface(Map *map, uint32_t lineNumber, List *line)
     deleteList(line, true);
 }
 
-// sprawdza najpierw czy jest poprawne składniowo
-void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
+/** @brief Sprawdza czy polecenie "addRoute" z wejścia jest poprawne.
+ * Obsługuję polecenie typu
+ * "numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy".
+ * @p line zawiera wczytaną linię zawierjącą co najmniej jedno słowo.
+ * Sprawdza poprawność wszystkich argumentów (w tym czy można dodać odpowiednie
+ * odcinki na mapę dróg).
+ * @param[in] map           - wskźnik na mapę;
+ * @param[in] line          - wskażnik na wiersz zawierający polecenie.
+ * @return Wartość @p jeśli polecenie jest poprawne lub @p false w przeciwnym
+ * wypadku.
+ */
+bool checkIfRouteCanBeAdded(Map *map, List *line) {
     assert(map);
     assert(line);
 
@@ -111,38 +174,105 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
 
     if (lineSize % 3 != 2 || lineSize < 5 || routeId < 1 || 999 < routeId ||
             findRouteOnList(map->routes, routeId) != NULL) {
+        return false;
+    }
+
+    /* Teraz, do końca kodu, przeglądamy po kolei wszystkie
+     * wymagane odcinki drogowe i
+     * sprawdzamy czy są poprawne. Sprawdzamy również czy nie ma cykli,
+     * czyli czy jakieś miasto nie powtarza się dwa razy. */
+    iterator = iterator->next;
+    char *previousCityName = iterator->data;
+    if (!isStringValidCityName(previousCityName)) {
+        return false;
+    }
+    City *previousCity = findCityOnList(map->cities, previousCityName);
+
+    for (uint32_t i = 4; i < lineSize; i += 3) {
+        /* Spradzamy czy miasto previousCityName nie powtorza się na liście. */
+        if (findStringOnList(iterator->next, line->end, previousCityName)) {
+            return false;
+        }
+
+        iterator = iterator->next;
+        unsigned length = stringToUnsigned(iterator->data);
+        if (length == 0) {
+            return false;
+        }
+
+        iterator = iterator->next;
+        int builtYear = stringToInt(iterator->data);
+        if (builtYear == 0) {
+            return false;
+        }
+
+        iterator = iterator->next;
+        char *cityName = iterator->data;
+        if (!isStringValidCityName(cityName)) {
+            return false;
+        }
+        City *city = findCityOnList(map->cities, cityName);
+
+        /* Jeśli istniały miasta previousCity i city oraz odcinek drogowy
+         * między nimi, to musimy sprawdzić czy nie kłóci się on z tym,
+         * który chcemy dodać. */
+        if (previousCity != NULL && city != NULL) {
+            ListIterator *roadIterator = findRoadModule(previousCity, city);
+            if (roadIterator != NULL) {
+                Road *road = roadIterator->data;
+                if (road->length != length ||
+                        road->buildYearOrLastRepairYear > builtYear) {
+                    return false;
+                }
+            }
+        }
+
+        previousCityName = cityName;
+        previousCity = city;
+    }
+
+    return true;
+}
+
+/** @brief Obsługuję polecenie "addRoute" z wejścia.
+ * Obsługuję polecenie typu
+ * "numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy".
+ * @p line zawiera wczytaną linię zawierjącą co najmniej jedno słowo.
+ * Sprawdza poprawność wszystkich argumentów (w tym czy można dodać odpowiednie
+ * odcinki na mapę dróg). Jeśli są poprawne
+ * to wywołuje po kolei odpowiednie funkcje @ref addRoad. Jeśli zabraknie
+ * pamięci to zmiany pozostają na mapie. Na koniec dodawana jest nowa droga
+ * krajowa.
+ * Jeśli polecenie jest niepoprawne składniowo lub jego wykonanie
+ * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem
+ * @p false lub @p NULL, to wypisuje na standardowe wyjście diagnostyczne
+ * jednoliniowy komunikat: ERROR @p lineNumber.
+ * Funkcja usuwa strukturę @p line.
+ * @param[in,out] map       - wskźnik na mapę;
+ * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
+ * @param[in,out] line      - wskażnik na wiersz zawierający polecenie.
+ */
+void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
+    assert(map);
+    assert(line);
+
+    if (!checkIfRouteCanBeAdded(map, line)) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
         deleteList(line, true);
         return;
     }
 
-    for (uint32_t i = 1; i < lineSize; i++) {
-        iterator = iterator->next;
+    uint32_t lineSize = sizeList(line);
+    assert(lineSize > 0);
 
-        if (i % 3 == 1) { // nazwa miasta
-            if (!isStringValidCityName(iterator->data)) {
-                fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
-                deleteList(line, true);
-                return;
-            }
-        } else if (i % 3 == 2) { // długość odcinka
-            if (stringToInt(iterator->data) == 0) {
-                fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
-                deleteList(line, true);
-                return;
-            }
-        } else { // rok budowy lub ostatniego remontu
-            if (stringToUnsigned(iterator->data) == 0) {
-                fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
-                deleteList(line, true);
-                return;
-            }
-        }
-    }
+    ListIterator *iterator = line->begin;
+    unsigned routeId = stringToUnsigned(iterator->data);
 
-    iterator = line->begin->next;
-    char *previousCity = iterator->data;
-    City *city = findCityInsertIfNecessary(map->cities, previousCity);
+    /* Teraz, do końca kodu, dodajemy po kolei odcinki drogowe do mapy oraz
+     * dodajmy po kolei miasta do tworzonej drogi krajowej. */
+    iterator = iterator->next;
+    char *previousCityName = iterator->data;
+    City *city = findCityInsertIfNecessary(map->cities, previousCityName);
     if (city == NULL) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
         deleteList(line, true);
@@ -163,8 +293,9 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
         int builtYear = stringToInt(iterator->data);
 
         iterator = iterator->next;
+        char *cityName = iterator->data;
 
-        if (!updateRoad(map, previousCity, iterator->data, length, builtYear)) {
+        if (!updateRoad(map, previousCityName, cityName, length, builtYear)) {
             fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
             deleteList(line, true);
             deleteRouteModule(route);
@@ -172,12 +303,14 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
         }
 
         if (insertList(route->cities->end,
-                       findCityOnList(map->cities, iterator->data)) == NULL) {
+                       findCityOnList(map->cities, cityName)) == NULL) {
             fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
             deleteList(line, true);
             deleteRouteModule(route);
             return;
         }
+
+        previousCityName = cityName;
     }
 
     deleteList(line, true);
@@ -188,19 +321,9 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
     }
 }
 
-//TODO usun
-void wypisz(List *line) {
-    ListIterator *it = line->begin;
-    while (it != line->end) {
-        printf("%s;", (char *) it->data);
-        it = it->next;
-    }
-    printf("\n");
-    fflush(stdout);
-}
-
 /** @brief Obsługuje pojedynczy wiersz wejścia.
  * Czyta pojedynczy wiersz i wywołuję odpowiednie operacje na danej mapie.
+ * Wiersz to pojedyncza linia wejścia zakończona znakiem '\n'.
  * Jeśli wiersz jest postaci:
  *  - numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy lub
  *  - ostatniego remontu;nazwa miasta;długość odcinka drogi;rok budowy lub
@@ -223,20 +346,30 @@ void wypisz(List *line) {
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
  * @return Wartość @p 0 jeśli operacja zakończyła się sukcesem,
  * wartość @p 2 jeśli nie udało się zaalokować pamięci lub
- * wartość @p EOF jeśli nie ma już więcej wierszy na wejściu.
+ * wartość @p EOF jeśli wiersz zakończył się znakiem @p EOF.
  */
 int nextCommandTextInterface(Map *map, uint32_t lineNumber) {
     assert(map);
 
-    printf("start\n");
-    fflush(stdout);
-
     List *line = NULL;
     int x = nextLineReader(&line);
-    wypisz(line);
+
+    /* Sprawdzmy czy wystąpił jakiś błąd podczas wczytywania. */
     if (x != 0) {
         if (x == 1) {
             fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
+        }
+
+        if (x == EOF) {
+            char *commandName = line->begin->data;
+            uint32_t lineSize = sizeList(line);
+
+            /* Niepuste wiersze niezakończone znakiem '\n' są błędne. */
+            if (!(commandName[0] == 0 && lineSize == 1)) {
+                fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
+            }
+
+            deleteList(line, true);
         }
 
         return x;

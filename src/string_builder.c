@@ -62,6 +62,7 @@ StringBuilder *newStringBuilder() {
         free(result);
         return NULL;
     }
+    result->data[0] = 0;
 
     return result;
 }

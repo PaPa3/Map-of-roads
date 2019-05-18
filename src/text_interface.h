@@ -35,7 +35,7 @@
  * @param[in] lineNumber    - numer aktualnie obsługiwanej linii wejścia.
  * @return Wartość @p 0 jeśli operacja zakończyła się sukcesem,
  * wartość @p 2 jeśli nie udało się zaalokować pamięci lub
- * wartość @p EOF jeśli nie ma już więcej wierszy na wejściu.
+ * wartość @p EOF jeśli wiersz zakończył się znakiem @p EOF.
  */
 int nextCommandTextInterface(Map *map, uint32_t lineNumber);
 

@@ -1,7 +1,27 @@
 #!/bin/bash
 
+# Skrypt, który dla danej drogi krajowej liczy jej długość.
+#
+# Użycie:
+# ./map.sh FILE_PATH ROUTE_ID ROUTE_ID ... ROUTE_ID
+# gdzie FILE_PATH to ścieżka do pliku zawierająca wyniki funkcji
+# "getRouteDescription". Opisy dróg krajowych w pliku FILE_PATH
+# muszą być poprawne oraz dla danej drogi krajowej plik zawera
+# co najwyżej jedną informacje o tejże drodze.
+# ROUTE_ID to numer drogi krajowej, o którą zadawane jest pytanie.
+# ROUTE_ID to liczba z zakresu [1, 999] bez zer wiodących.
+#
+# Działanie:
+# Skrypt po kolei przegląda argumenty i dla każdego argumentu typu
+# ROUTE_ID zwraca długość danej drogi, jeśli jest o niej informacja we
+# wskazanym pliku, krajowej w formacie
+# "numer drogi krajowej;długość". Jeśli aktualnie przeglądany argument
+# jest niepoprawny to skrypt kończy działanie z kodem wyjścia 1.
+# Jeśli parametry są poprawne to skrypt kończy się kodem wyjścia 0.
+
+
 # Wzorzec poprawnego numeru drogi krajowej, czyli
-# liczba całkowita z zakresu [1, 999].
+# liczba całkowita z zakresu [1, 999] bez zer wiodących.
 validRouteIds='^[1-9][0-9]{0,2}$'
 
 # Jeśli za mało parametrów.
@@ -52,6 +72,8 @@ do
 		# i-te słowo z ciągu słów $routeDescription, gdzie słowa
 		# to oddzielone znakiem ; ciągi znaków.
 		x=$(echo $routeDescription | cut -d ";" -f $i)
+		
+		# Jeśli nie istnieje już i-te (oraz każde kolejne) słowo.
 		if [[ $x = "" ]]
 			then
 				break

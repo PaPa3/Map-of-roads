@@ -33,7 +33,7 @@ int nextStringReader(char **result) {
     }
 
     char c;
-    while (scanf("%c", &c) != EOF) {
+    while (scanf("%c", &c) == 1) {
         if (c == ';' || c == '\n') {
             *result = string->data;
             deleteStringBuilder(string, false);
@@ -70,15 +70,11 @@ void ignoreLineReader()  {
  * @return Wartość @p 0 jeśli funkcja zakończyła się powodzenie,
  * wartość @p 1 jeśli, któreś ze słów zawiera niepoprawny znak,
  * wartość @p 2 jeśli nie udało się zaalokować pamięci lub
- * wartość @p EOF jeśli nie ma już żadnego wiersza na wejściu
+ * wartość @p EOF jeśli linia zakończyła się znakiem @p EOF.
  */
 int nextLineReader(List **result) {
     assert(result);
     assert(*result == NULL);
-
-    if (feof(stdin)) {
-        return EOF;
-    }
 
     *result = newList();
     if (*result == NULL) {
@@ -90,7 +86,7 @@ int nextLineReader(List **result) {
         char *ptr = NULL;
         x = nextStringReader(&ptr);
 
-        if (x == 1 || x == 2 || insertList((*result)->end, ptr) == NULL) {
+        if (x == 1 || x == 2 || insertList((*result)->end, ptr) == NULL) { // TODO do poprawy ten insert (łapanie z niego błedów)
             deleteList(*result, true);
             *result = NULL;
 
@@ -102,6 +98,10 @@ int nextLineReader(List **result) {
             }
         }
     } while (x == ';');
+
+    if (x == EOF) {
+        return EOF;
+    }
 
     return 0;
 }
