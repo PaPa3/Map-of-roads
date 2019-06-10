@@ -68,6 +68,13 @@ void deleteList(List *list, bool freeData);
  */
 ListIterator *eraseList(ListIterator *iterator, bool freeData);
 
+/** @brief Wstawia węzeł do listy.
+ * Wstawie węzeł @p newIterator przed węzeł @p iterator.
+ * @param[in,out] iterator          - wskaźnik na węzeł przed, który wstawić;
+ * @param[in,out] newIterator       - wskaźnik na wstawiany węzeł.
+ */
+void insertListIterator(ListIterator *iterator, ListIterator *newIterator);
+
 /** @brief Wstawia dane do listy.
  * Wstawia dane do listy w miejsce poprzedzające dany węzeł.
  * @param[in,out] iterator          - wskaźnik na węzeł;

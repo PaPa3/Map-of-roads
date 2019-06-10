@@ -114,3 +114,63 @@ ListIterator *findStringOnList(ListIterator *begin, ListIterator *end,
 
     return NULL;
 }
+
+/** @brief Sortuje listę słów algorytmem merge sort.
+ * @param[in,out] begin - wskaźnik na początek listy;
+ * @param[in,out] end   - wskaźnik na koniec listy.
+ * @return Wskaźnik na początek posortowanej listy.
+ */
+ListIterator *mergeSortListOfStrings(ListIterator *begin, ListIterator *end) {
+    assert(begin);
+    assert(end);
+    assert(begin->father == end->father);
+
+    uint32_t size = 0;
+    ListIterator *iterator = begin;
+
+    while (iterator != end) {
+        size++;
+        iterator = iterator->next;
+    }
+
+    if (size <= 1) {
+        return begin;
+    }
+
+    ListIterator *middle = begin;
+    for (uint32_t i = 0; i < size / 2; i++) {
+        middle = middle->next;
+    }
+
+    begin = mergeSortListOfStrings(begin, middle);
+    middle = mergeSortListOfStrings(middle, end);
+
+    end->previous = middle->previous;
+    middle->previous->next = end;
+    ListIterator *it1 = begin;
+    ListIterator *it2 = middle;
+    ListIterator *result;
+    if (strcmp(it1->data, it2->data) < 0) {
+        result = it1;
+    } else {
+        result = it2;
+    }
+
+    for (uint32_t i = 0; i < (size + 1) / 2; i++) {
+        while (it1 != end && strcmp(it1->data, it2->data) < 0) {
+            it1 = it1->next;
+        }
+        iterator = it2->next;
+        insertListIterator(it1, it2);
+        it2 = iterator;
+    }
+
+    return result;
+}
+
+/** @brief Sortuje listę słów.
+ * @param list[in,out]  - wskaźnik na listę słów.
+ */
+void sortListOfStrings(List *list) {
+    mergeSortListOfStrings(list->begin, list->end);
+}

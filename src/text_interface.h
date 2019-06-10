@@ -15,8 +15,8 @@
  * Czyta pojedynczy wiersz i wywołuję odpowiednie operacje na danej mapie.
  * Jeśli wiersz jest postaci:
  *  - numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy lub
- *  - ostatniego remontu;nazwa miasta;długość odcinka drogi;rok budowy lub
- *  - ostatniego remontu;nazwa miasta;…;nazwa miasta - to dodaje drogę
+ *    ostatniego remontu;nazwa miasta;długość odcinka drogi;rok budowy lub
+ *    ostatniego remontu;nazwa miasta;…;nazwa miasta - to dodaje drogę
  *      o takim przebiegu do mapy;
  *  - addRoad;city1;city2;length;builtYear - to wywołuje funkcję @ref addRoad
  *      z podanymi parametrami;
@@ -25,7 +25,15 @@
  *  - getRouteDescription;routeId - to wywołuje funkcję @ref getRouteDescription
  *      z podanymi parametrem. Jeśli wynik działania tej funkcji jest inny niż
  *      NULL, to wypisuje na standardowe wyjście jedną linię z wynikiem
- *      działania tej funkcji.
+ *      działania tej funkcji;
+ *  - newRoute;routeId;city1;city2 - to wywołuje funkcję @ref newRoute
+ *      z podanymi parametrami;
+ *  - extendRoute;routeId;city - to wywołuje funkcję @ref extendRoute
+ *      z podanymi parametrami;
+ *  - removeRoad;city1;city2 - to wywołuje funkcję @ref removeRoad
+ *      z podanymi parametrami;
+ *  - removeRoute;routeId - to wywołuje funkcję @ref removeRoute
+ *      z podanymi parametrami.
  *
  * Jeśli polecenie jest niepoprawne składniowo lub jego wykonanie
  * zakończyło się błędem, czyli odpowiednia funkcja zakończyła się wynikiem

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <limits.h>
 
 /** @brief Czyta pojedyncze słowo ze standarowego wejścia.
  * Wczytuje słowo. Słowa to ciągi znaków oddzielone
@@ -32,15 +33,40 @@ int nextStringReader(char **result) {
         return 2;
     }
 
-    char c;
-    while (scanf("%c", &c) == 1) {
-        if (c == ';' || c == '\n') {
+//    char c;
+//    while (scanf("%c", &c) == 1) {
+//        if (c == ';' || c == '\n') {
+//            *result = string->data;
+//            deleteStringBuilder(string, false);
+//            return c;
+//        }
+
+//        if (0 <= c && c <= 31) {
+//            deleteStringBuilder(string, true);
+//            return 1;
+//        }
+
+//        if (!appendStringBuilderChar(string, c)) {
+//            deleteStringBuilder(string, true);
+//            return 2;
+//        }
+//    }
+
+//    *result = string->data;
+//    deleteStringBuilder(string, false);
+//    return EOF;
+
+
+    int c;
+    while (true) {
+        c = getchar();
+        if (c == ';' || c == '\n' || c == EOF) {
             *result = string->data;
             deleteStringBuilder(string, false);
             return c;
         }
 
-        if (0 <= c && c <= 31) {
+        if ((0 <= c && c <= 31) || c < CHAR_MIN || c > CHAR_MAX) {
             deleteStringBuilder(string, true);
             return 1;
         }
@@ -50,10 +76,6 @@ int nextStringReader(char **result) {
             return 2;
         }
     }
-
-    *result = string->data;
-    deleteStringBuilder(string, false);
-    return EOF;
 }
 
 /** @brief Ignoruje cały wiersz z wejścia.
@@ -62,6 +84,10 @@ int nextStringReader(char **result) {
 void ignoreLineReader()  {
     char c;
     while (scanf("%c", &c) == 1 && c != '\n');
+    /*int a;
+    do {
+        a = getchar();
+    } while (a != EOF && a != '\n');*/
 }
 
 /** @brief Wczytuje wiersz ze standardowego wejścia.
@@ -71,8 +97,10 @@ void ignoreLineReader()  {
  * to @p *result wskazuję na tę liste.
  * @param[in,out] result    - wskaźnik na wskaźnik wskazujący na @p NULL.
  * @return Wartość @p 0 jeśli funkcja zakończyła się powodzenie,
- * wartość @p 1 jeśli, któreś ze słów zawiera niepoprawny znak,
+ * wartość @p 1 jeśli, któreś ze słów zawiera niepoprawny znak
+ * lub jest pustym słowem,
  * wartość @p 2 jeśli nie udało się zaalokować pamięci lub
+ * wartość @p 3 jeśli linia do zignorowania lub
  * wartość @p EOF jeśli linia zakończyła się znakiem @p EOF.
  */
 int nextLineReader(List **result) {
@@ -84,6 +112,7 @@ int nextLineReader(List **result) {
         return 2;
     }
 
+    bool firstWord = true;
     int x;
     do {
         char *ptr = NULL;
@@ -91,6 +120,11 @@ int nextLineReader(List **result) {
 
         if (x != 1 && x != 2 && insertList((*result)->end, ptr) == NULL) {
             x = 2;
+        }
+
+        /* Jeśli puste słowo. */
+        if (ptr != NULL && *ptr == 0 && x == ';') {
+            x = 1;
         }
 
         if (x == 1 || x == 2) {
@@ -104,6 +138,16 @@ int nextLineReader(List **result) {
                 return 2;
             }
         }
+
+        /* Jeśli komentarz lub pusta linia niezakończona znakiem EOF. */
+        if (firstWord && (*ptr == '#' || *ptr == 0) && x != EOF) {
+            if (x != '\n') {
+                ignoreLineReader();
+            }
+            return 3;
+        }
+
+        firstWord = false;
     } while (x == ';');
 
     if (x == EOF) {

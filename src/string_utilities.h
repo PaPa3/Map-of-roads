@@ -11,6 +11,7 @@
 #include "list.h"
 
 #include <errno.h>
+#include <stdbool.h>
 
 /** @brief Zamienia słowo na typ int.
  * Funkcja akceptuje liczby z zerami wiodącymi.
@@ -39,5 +40,10 @@ unsigned stringToUnsigned(const char *string);
  */
 ListIterator *findStringOnList(ListIterator *begin, ListIterator *end,
                                const char *string);
+
+/** @brief Sortuje listę słów.
+ * @param list[in,out]  - wskaźnik na listę słów.
+ */
+void sortListOfStrings(List *list);
 
 #endif // STRING_TO_INTEGER_H

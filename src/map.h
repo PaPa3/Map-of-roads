@@ -144,20 +144,6 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2);
  */
 char const* getRouteDescription(Map *map, unsigned routeId);
 
-/** @brief Dodaje do mapy odcinek drogi między dwoma różnymi miastami.
- * Jeśli któreś z podanych miast nie istnieje, to dodaje go do mapy, a następnie
- * dodaje do mapy odcinek drogi między tymi miastami.
- * @param[in,out] map    – wskaźnik na strukturę przechowującą mapę dróg;
- * @param[in] cityName1  – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] cityName2  – wskaźnik na napis reprezentujący nazwę miasta;
- * @param[in] length     – długość w km odcinka drogi;
- * @param[in] builtYear  – rok budowy odcinka drogi.
- * @return Wartość @p true, jeśli odcinek drogi został dodany.
- * Wartość @p false, jeśli wystąpił błąd: któryś z parametrów ma niepoprawną
- * wartość, obie podane nazwy miast są identyczne, odcinek drogi między tymi
- * miastami już istnieje lub nie udało się zaalokować pamięci.
- */
-
 /** @brief Uaktualnia odcinek drogowy w mapie.
  * Jeśli dana droga nie istnieje, to dodaję ją do mapy funkcją @ref addRoad.
  * Jeśli dana droga istnieje to wywołuję funkcję @ref repairRoad.
@@ -175,5 +161,15 @@ char const* getRouteDescription(Map *map, unsigned routeId);
  */
 bool updateRoad(Map *map, const char *cityName1, const char *cityName2,
                 unsigned length, int builtYear);
+
+/** @brief Usuwa z mapy dróg drogę krajową.
+ * Usuwa z mapy dróg drogę krajową o podanym numerze, jeśli taka istnieje.
+ * Nie usuwa odcinków dróg ani miast.
+ * @param[in,out] map   – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] routeId   - numer drogi krajowej.
+ * @return Wartość @p false, gdy podana droga krajowa nie istnieje lub
+ * podany numer jest niepoprawny. Wartość @p true w przeciwnym wypadku.
+ */
+bool removeRoute(Map *map, unsigned routeId);
 
 #endif /* __MAP_H__ */

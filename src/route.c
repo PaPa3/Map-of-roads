@@ -486,16 +486,16 @@ bool findNewRouteAfterExtend(Route *route, City *city, List *listOfCities) {
  * Znajduję drogę krajową o danym numerze na liście.
  * @param[in] list              - wskaźnik na listę dróg krajowych;
  * @param[in] routeId           - numer szukanej drogi krajowej.
- * @return Wskaźnik na szukaną drogę krajową lub NULL, jeśli na liści nie ma
- * szukanej drogi krajowej.
+ * @return Wskaźnik na @ref ListIterator zawierający szukaną drogę krajową
+ * lub NULL, jeśli na liści nie ma szukanej drogi krajowej.
  */
-Route *findRouteOnList(List *list, unsigned routeId) {
+ListIterator *findRouteOnList(List *list, unsigned routeId) {
     assert(list);
 
     ListIterator *iterator = list->begin;
     while (iterator != list->end) {
         if (((Route *)iterator->data)->routeId == routeId) {
-            return iterator->data;
+            return iterator;
         }
         iterator = iterator->next;
     }

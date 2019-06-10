@@ -19,9 +19,10 @@
  * to @p *result wskazuję na tę liste.
  * @param[in,out] result    - wskaźnik na wskaźnik wskazujący na @p NULL.
  * @return Wartość @p 0 jeśli funkcja zakończyła się powodzenie,
- * wartość @p 1 jeśli, któreś ze słów zawiera niepoprawny znak,
+ * wartość @p 1 jeśli, któreś ze słów zawiera niepoprawny znak
+ * lub jest pustym słowem,
  * wartość @p 2 jeśli nie udało się zaalokować pamięci lub
- * wartość @p EOF jeśli nie ma już żadnego wiersza na wejściu
+ * wartość @p EOF jeśli linia zakończyła się znakiem @p EOF.
  */
 int nextLineReader(List **result);
 

@@ -241,11 +241,12 @@ bool extendRoute(Map *map, unsigned routeId, const char *cityName) {
         return false;
     }
 
-    Route *route = findRouteOnList(map->routes, routeId);
-    if (route == NULL) {
+    ListIterator *iterator = findRouteOnList(map->routes, routeId);
+    if (iterator == NULL) {
         return false;
     }
 
+    Route *route = iterator->data;
     if (findCityOnList(route->cities, city->name) != NULL) {
         return false;
     }
@@ -334,14 +335,14 @@ char const* getRouteDescription(Map *map, unsigned routeId) {
         return emptyString;
     }
 
-    Route *route = findRouteOnList(map->routes, routeId);
-    if (route == NULL) {
+    ListIterator *iterator = findRouteOnList(map->routes, routeId);
+    if (iterator == NULL) {
         return emptyString;
     }
 
     free(emptyString);
 
-    return descriptionRouteModule(route);
+    return descriptionRouteModule(iterator->data);
 }
 
 /** @brief Uaktualnia odcinek drogowy w mapie.
@@ -382,4 +383,26 @@ bool updateRoad(Map *map, const char *cityName1, const char *cityName2,
             return repairRoadModule(city1, city2, builtYear);
         }
     }
+}
+
+/** @brief Usuwa z mapy dróg drogę krajową.
+ * Usuwa z mapy dróg drogę krajową o podanym numerze, jeśli taka istnieje.
+ * Nie usuwa odcinków dróg ani miast.
+ * @param[in,out] map   – wskaźnik na strukturę przechowującą mapę dróg;
+ * @param[in] routeId   - numer drogi krajowej.
+ * @return Wartość @p false, gdy podana droga krajowa nie istnieje lub
+ * podany numer jest niepoprawny. Wartość @p true w przeciwnym wypadku.
+ */
+bool removeRoute(Map *map, unsigned routeId) {
+    if (map == NULL) {
+        return false;
+    }
+
+    ListIterator *iterator = findRouteOnList(map->routes, routeId);
+    if (iterator == NULL) {
+        return false;
+    }
+
+    eraseList(iterator, false);
+    return true;
 }
