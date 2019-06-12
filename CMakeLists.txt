@@ -41,11 +41,7 @@ set(SOURCE_FILES
     src/text_interface.c
     src/text_interface.h
     src/string_utilities.c
-    src/string_utilities.h
-    src/treap.c
-    src/treap.h
-    src/set.c
-    src/set.h)
+    src/string_utilities.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(map ${SOURCE_FILES})

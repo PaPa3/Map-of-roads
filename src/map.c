@@ -403,6 +403,8 @@ bool removeRoute(Map *map, unsigned routeId) {
         return false;
     }
 
+    deleteRouteModule(iterator->data);
     eraseList(iterator, false);
+
     return true;
 }

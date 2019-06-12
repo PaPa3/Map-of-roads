@@ -538,6 +538,8 @@ void removeRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
     deleteList(line, true);
 }
 
+int asdf = 408;
+
 /** @brief Obsługuje pojedynczy wiersz wejścia.
  * Czyta pojedynczy wiersz i wywołuję odpowiednie operacje na danej mapie.
  * Jeśli wiersz jest postaci:
@@ -613,7 +615,7 @@ int nextCommandTextInterface(Map *map, uint32_t lineNumber) {
 
     char *commandName = line->begin->data;
 //    uint32_t lineSize = sizeList(line);
-//
+
 //    /* Jeśli linia do zignorowania. */
 //    if (commandName[0] == '#' || (commandName[0] == 0 && lineSize == 1)) {
 //        deleteList(line, true);

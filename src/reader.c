@@ -66,7 +66,7 @@ int nextStringReader(char **result) {
             return c;
         }
 
-        if ((0 <= c && c <= 31) || c < CHAR_MIN || c > CHAR_MAX) {
+        if (/*(0 <= c && c <= 31) ||*/ c < CHAR_MIN || c > CHAR_MAX) {
             deleteStringBuilder(string, true);
             return 1;
         }
