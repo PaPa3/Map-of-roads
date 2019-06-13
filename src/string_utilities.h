@@ -42,7 +42,7 @@ ListIterator *findStringOnList(ListIterator *begin, ListIterator *end,
                                const char *string);
 
 /** @brief Sortuje listę słów.
- * @param list[in,out]  - wskaźnik na listę słów.
+ * @param[in,out] list  - wskaźnik na listę słów.
  */
 void sortListOfStrings(List *list);
 

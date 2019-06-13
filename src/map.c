@@ -43,6 +43,14 @@ Map *newMap() {
         return NULL;
     }
 
+    result->citiesMap = newHashMap();
+    if (result->citiesMap == NULL) {
+        deleteList(result->cities, false);
+        deleteList(result->routes, false);
+        free(result);
+        return NULL;
+    }
+
     return result;
 }
 
@@ -69,6 +77,8 @@ void deleteMap(Map *map) {
         iterator = iterator->next;
     }
     deleteList(map->routes, false);
+
+    deleteHashMap(map->citiesMap);
 
     free(map);
 }
@@ -124,8 +134,10 @@ bool addRoad(Map *map, const char *cityName1, const char *cityName2,
         return false;
     }
 
-    City *city1 = findCityInsertIfNecessary(map->cities, cityName1);
-    City *city2 = findCityInsertIfNecessary(map->cities, cityName2);
+    City *city1 = findCityOnHashMapInsertIfNecessary(map->citiesMap,
+                                                     map->cities, cityName1);
+    City *city2 = findCityOnHashMapInsertIfNecessary(map->citiesMap,
+                                                     map->cities, cityName2);
     if (city1 == NULL || city2 == NULL) {
         return false;
     }
@@ -155,8 +167,8 @@ bool repairRoad(Map *map, const char *cityName1, const char *cityName2, int repa
         return false;
     }
 
-    City *city1 = findCityOnList(map->cities, cityName1);
-    City *city2 = findCityOnList(map->cities, cityName2);
+    City *city1 = findCityOnHashMap(map->citiesMap, cityName1);
+    City *city2 = findCityOnHashMap(map->citiesMap, cityName2);
     if (city1 == NULL || city2 == NULL) {
         return false;
     }
@@ -191,8 +203,8 @@ bool newRoute(Map *map, unsigned routeId,
         return false;
     }
 
-    City *city1 = findCityOnList(map->cities, cityName1);
-    City *city2 = findCityOnList(map->cities, cityName2);
+    City *city1 = findCityOnHashMap(map->citiesMap, cityName1);
+    City *city2 = findCityOnHashMap(map->citiesMap, cityName2);
     if (city1 == NULL || city2 == NULL) {
         return false;
     }
@@ -236,7 +248,7 @@ bool extendRoute(Map *map, unsigned routeId, const char *cityName) {
         return false;
     }
 
-    City *city = findCityOnList(map->cities, cityName);
+    City *city = findCityOnHashMap(map->citiesMap, cityName);
     if (city == NULL) {
         return false;
     }
@@ -276,8 +288,8 @@ bool removeRoad(Map *map, const char *cityName1, const char *cityName2) {
         return false;
     }
 
-    City *city1 = findCityOnList(map->cities, cityName1);
-    City *city2 = findCityOnList(map->cities, cityName2);
+    City *city1 = findCityOnHashMap(map->citiesMap, cityName1);
+    City *city2 = findCityOnHashMap(map->citiesMap, cityName2);
     if (city1 == NULL || city2 == NULL) {
         return false;
     }
@@ -366,8 +378,10 @@ bool updateRoad(Map *map, const char *cityName1, const char *cityName2,
         return false;
     }
 
-    City *city1 = findCityInsertIfNecessary(map->cities, cityName1);
-    City *city2 = findCityInsertIfNecessary(map->cities, cityName2);
+    City *city1 = findCityOnHashMapInsertIfNecessary(map->citiesMap,
+                                                     map->cities, cityName1);
+    City *city2 = findCityOnHashMapInsertIfNecessary(map->citiesMap,
+                                                     map->cities, cityName2);
     if (city1 == NULL || city2 == NULL) {
         return false;
     }

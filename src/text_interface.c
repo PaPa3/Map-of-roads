@@ -159,9 +159,8 @@ void getRouteDescriptionTextInterface(Map *map, uint32_t lineNumber, List *line)
  * "numer drogi krajowej;nazwa miasta;długość odcinka drogi;rok budowy".
  * @p line zawiera wczytaną linię zawierjącą co najmniej jedno słowo.
  * Sprawdza czy droga krajowa zwiera cykl zakładająć poprawność argumentów.
- * @param[in] map           - wskźnik na mapę;
  * @param[in] line          - wskażnik na wiersz zawierający polecenie.
- * @return Wartość @p jeśli droga krajowa nie zawiera cykli lub @p false
+ * @return Wartość @p true jeśli droga krajowa nie zawiera cykli lub @p false
  * w przeciwnym przypadku.
  */
 bool checkIfRouteDoesNotHaveCycle(List *line) {
@@ -242,12 +241,6 @@ bool checkIfRouteCanBeAdded(Map *map, List *line) {
     City *previousCity = findCityOnList(map->cities, previousCityName);
 
     for (uint32_t i = 4; i < lineSize; i += 3) {
-//        if ((i - 1) % 900 == 0) {printf("numer %" PRIu32 "\n", i); fflush(stdout);}
-//        /* Spradzamy czy miasto previousCityName nie powtorza się na liście. */
-//        if (findStringOnList(iterator->next, line->end, previousCityName)) {
-//            return false;
-//        }
-
         iterator = iterator->next;
         unsigned length = stringToUnsigned(iterator->data);
         if (length == 0) {
@@ -327,7 +320,8 @@ void addRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
      * dodajmy po kolei miasta do tworzonej drogi krajowej. */
     iterator = iterator->next;
     char *previousCityName = iterator->data;
-    City *city = findCityInsertIfNecessary(map->cities, previousCityName);
+    City *city = findCityOnHashMapInsertIfNecessary(map->citiesMap, map->cities,
+                                                    previousCityName);
     if (city == NULL) {
         fprintf(stderr, "ERROR %" PRIu32 "\n", lineNumber);
         deleteList(line, true);
@@ -538,8 +532,6 @@ void removeRouteTextInterface(Map *map, uint32_t lineNumber, List *line) {
     deleteList(line, true);
 }
 
-int asdf = 408;
-
 /** @brief Obsługuje pojedynczy wiersz wejścia.
  * Czyta pojedynczy wiersz i wywołuję odpowiednie operacje na danej mapie.
  * Jeśli wiersz jest postaci:
@@ -614,13 +606,6 @@ int nextCommandTextInterface(Map *map, uint32_t lineNumber) {
     }
 
     char *commandName = line->begin->data;
-//    uint32_t lineSize = sizeList(line);
-
-//    /* Jeśli linia do zignorowania. */
-//    if (commandName[0] == '#' || (commandName[0] == 0 && lineSize == 1)) {
-//        deleteList(line, true);
-//        return 0;
-//    }
 
     if (strcmp(commandName, "addRoad") == 0) {
         addRoadTextInterface(map, lineNumber, line);

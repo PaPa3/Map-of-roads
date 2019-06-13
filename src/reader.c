@@ -16,7 +16,7 @@
 
 /** @brief Czyta pojedyncze słowo ze standarowego wejścia.
  * Wczytuje słowo. Słowa to ciągi znaków oddzielone
- * znakiem ';' lub '\n' nie zawierające znaków o kodach [0, 31].
+ * znakiem ';' lub '\n' nie zawierające znaku o kodzie 0.
  * Jeśli funkcja zakończy się sukcesem
  * to @p *result wskazuję napis w stylu C zawierający wczytane słowo
  * @param[in,out] result    - wskaźnik na wskaźnik wskazujący na @p NULL.
@@ -33,40 +33,15 @@ int nextStringReader(char **result) {
         return 2;
     }
 
-//    char c;
-//    while (scanf("%c", &c) == 1) {
-//        if (c == ';' || c == '\n') {
-//            *result = string->data;
-//            deleteStringBuilder(string, false);
-//            return c;
-//        }
-
-//        if (0 <= c && c <= 31) {
-//            deleteStringBuilder(string, true);
-//            return 1;
-//        }
-
-//        if (!appendStringBuilderChar(string, c)) {
-//            deleteStringBuilder(string, true);
-//            return 2;
-//        }
-//    }
-
-//    *result = string->data;
-//    deleteStringBuilder(string, false);
-//    return EOF;
-
-
-    int c;
-    while (true) {
-        c = getchar();
-        if (c == ';' || c == '\n' || c == EOF) {
+    char c;
+    while (scanf("%c", &c) == 1) {
+        if (c == ';' || c == '\n') {
             *result = string->data;
             deleteStringBuilder(string, false);
             return c;
         }
 
-        if (/*(0 <= c && c <= 31) ||*/ c < CHAR_MIN || c > CHAR_MAX) {
+        if (c == 0) {
             deleteStringBuilder(string, true);
             return 1;
         }
@@ -76,6 +51,10 @@ int nextStringReader(char **result) {
             return 2;
         }
     }
+
+    *result = string->data;
+    deleteStringBuilder(string, false);
+    return EOF;
 }
 
 /** @brief Ignoruje cały wiersz z wejścia.
@@ -84,15 +63,11 @@ int nextStringReader(char **result) {
 void ignoreLineReader()  {
     char c;
     while (scanf("%c", &c) == 1 && c != '\n');
-    /*int a;
-    do {
-        a = getchar();
-    } while (a != EOF && a != '\n');*/
 }
 
 /** @brief Wczytuje wiersz ze standardowego wejścia.
  * Wczytuje wiersz i dzieli go na słowa. Słowa to ciągi znaków oddzielone
- * znakiem ';' nie zawierające znaków o kodach [0, 31]. Tworzy nową listę
+ * znakiem ';' nie zawierające znaku o kodzie 0. Tworzy nową listę
  * i umieszcza na niej wczytane słowa. Jeśli funkcja zakończy się sukcesem
  * to @p *result wskazuję na tę liste.
  * @param[in,out] result    - wskaźnik na wskaźnik wskazujący na @p NULL.

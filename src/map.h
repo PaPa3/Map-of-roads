@@ -11,6 +11,7 @@
 #define __MAP_H__
 
 #include "list.h"
+#include "hash_map.h"
 
 #include <stdbool.h>
 
@@ -20,6 +21,7 @@
 typedef struct Map {
     List *cities;        ///< Lista miast na mapie
     List *routes;        ///< Lista dróg krajowych na mapie
+    HashMap *citiesMap;  ///< Haszmapa miast na mapie
 } Map;
 
 /** @brief Tworzy nową strukturę.

@@ -169,7 +169,7 @@ ListIterator *mergeSortListOfStrings(ListIterator *begin, ListIterator *end) {
 }
 
 /** @brief Sortuje listę słów.
- * @param list[in,out]  - wskaźnik na listę słów.
+ * @param[in,out] list  - wskaźnik na listę słów.
  */
 void sortListOfStrings(List *list) {
     mergeSortListOfStrings(list->begin, list->end);

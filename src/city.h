@@ -69,14 +69,11 @@ bool isStringValidCityName(const char *string);
  */
 City *findCityOnList(List *listOfCities, const char *name);
 
-/** @brief Znajduje miasto na liście miast (tworzy nowe jeśli takiego nie ma).
- * Znajduję strukturę @ref City o nazwie @p name na liście miast. Jeśli
- * na liście nie ma szukanego miasta to tworzy nowe o nazwie @p name oraz
- * dodaje je na listę
- * @param[in,out] listOfCities   - lista struktur @ref City;
- * @param[in] name               - wskaźnik na słowo będące nazwą szukanego miasta.
- * @return Wskaźnik na szukaną strukturę.
+/** @brief Liczy hasz słowa.
+ * Liczy hasz słowa @p string.
+ * @param[in] string            - wskaźnik na słowo.
+ * @return Hasz słowa.
  */
-City *findCityInsertIfNecessary(List *listOfCities, const char *name);
+uint32_t hashString(const char *string);
 
 #endif // CITY_H
