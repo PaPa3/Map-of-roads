@@ -145,6 +145,8 @@ ListIterator *mergeSortListOfStrings(ListIterator *begin, ListIterator *end) {
     begin = mergeSortListOfStrings(begin, middle);
     middle = mergeSortListOfStrings(middle, end);
 
+    /* Teraz łączymy dwie posortawane połowy listy. Sposób jest nietrywialny
+     * by uniknąć niepotrzebnych malloców. */
     end->previous = middle->previous;
     middle->previous->next = end;
     ListIterator *it1 = begin;
